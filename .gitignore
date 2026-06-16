@@ -1,0 +1,15 @@
+node_modules/
+functions/node_modules/
+.env
+.firebase/
+uploads/
+*.log
+*.sqlite
+*.db
+scratch/
+check_syntax.js
+fix_empty*.js
+generate_*.js
+html_to_pdf.js
+scratch_*.js
+remove_dots.js

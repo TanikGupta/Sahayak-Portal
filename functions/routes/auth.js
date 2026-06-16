@@ -1,0 +1,208 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../database');
+
+// GENERATE CAPTCHA
+router.get('/captcha', (req, res) => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    req.session.captchaAnswer = num1 + num2;
+    res.json({ success: true, text: `What is ${num1} + ${num2}?` });
+});
+
+// CHECK IF STUDENT HAS PASSWORD
+router.post('/check-student', async (req, res) => {
+    const { admissionNumber } = req.body;
+    if (!admissionNumber) return res.json({ success: false });
+
+    try {
+        const snapshot = await db.collection('users')
+            .where('admission_number', '==', admissionNumber)
+            .where('role', '==', 'student')
+            .limit(1).get();
+
+        if (snapshot.empty) return res.json({ success: false });
+
+        const user = snapshot.docs[0].data();
+        const hasPassword = user.password && user.password.trim() !== '';
+        res.json({ success: true, hasPassword });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
+// STUDENT LOGIN
+router.post('/login/student', async (req, res) => {
+    const { name, admissionNumber, course, password, captcha } = req.body;
+
+    if (!req.session.captchaAnswer || parseInt(captcha) !== req.session.captchaAnswer) {
+        req.session.captchaAnswer = null; // Clear it to prevent replay
+        return res.json({ success: false, message: 'Incorrect CAPTCHA answer.' });
+    }
+    req.session.captchaAnswer = null; // Clear on success as well
+
+    if (!admissionNumber) {
+        return res.json({ success: false, message: 'Please provide an Application Number.' });
+    }
+
+    try {
+        const snapshot = await db.collection('users')
+            .where('admission_number', '==', admissionNumber)
+            .where('role', '==', 'student')
+            .limit(1).get();
+
+        if (snapshot.empty) {
+            return res.json({ success: false, message: 'Invalid Application Number. Please check your details.' });
+        }
+
+        const doc = snapshot.docs[0];
+        const user = doc.data();
+
+        // If user has a password set, require password
+        if (user.password && user.password.trim() !== '') {
+            if (user.password !== password) {
+                return res.json({ success: false, message: 'Invalid password. If you forgot your password, please contact admin.' });
+            }
+        } else {
+            // No password set, fallback to name matching (case-insensitive)
+            if (!name) {
+                return res.json({ success: false, message: 'First time logging in? Please enter your Full Name.' });
+            }
+            if (!user.name || user.name.toLowerCase().trim() !== name.toLowerCase().trim()) {
+                return res.json({ success: false, message: 'Name does not match our records.' });
+            }
+        }
+
+        req.session.user = {
+            id: doc.id,
+            name: user.name,
+            role: user.role,
+            course: user.course,
+            admissionNumber: user.admission_number
+        };
+
+        res.json({ success: true, role: 'student', name: user.name });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// COHORT LEADER LOGIN
+router.post('/login/cohort_leader', async (req, res) => {
+    const { cohortLeaderId, password, captcha } = req.body;
+
+    if (!req.session.captchaAnswer || parseInt(captcha) !== req.session.captchaAnswer) {
+        req.session.captchaAnswer = null;
+        return res.json({ success: false, message: 'Incorrect CAPTCHA answer.' });
+    }
+    req.session.captchaAnswer = null;
+
+    if (!cohortLeaderId || !password) {
+        return res.json({ success: false, message: 'Please fill in all fields.' });
+    }
+
+    try {
+        const snapshot = await db.collection('users')
+            .where('admission_number', '==', cohortLeaderId)
+            .where('password', '==', password)
+            .where('role', '==', 'cohort_leader')
+            .limit(1).get();
+
+        if (snapshot.empty) {
+            return res.json({ success: false, message: 'Invalid Cohort Leader ID or Password.' });
+        }
+
+        const doc = snapshot.docs[0];
+        const user = doc.data();
+
+        req.session.user = {
+            id: doc.id,
+            name: user.name,
+            role: user.role,
+            admissionNumber: user.admission_number
+        };
+
+        res.json({ success: true, role: 'cohort_leader', name: user.name });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// ADMIN LOGIN
+router.post('/login/admin', async (req, res) => {
+    const { adminId, password, captcha } = req.body;
+
+    if (!req.session.captchaAnswer || parseInt(captcha) !== req.session.captchaAnswer) {
+        req.session.captchaAnswer = null;
+        return res.json({ success: false, message: 'Incorrect CAPTCHA answer.' });
+    }
+    req.session.captchaAnswer = null;
+
+    if (!adminId || !password) {
+        return res.json({ success: false, message: 'Please fill in all fields.' });
+    }
+
+    try {
+        const snapshot = await db.collection('users')
+            .where('admission_number', '==', adminId)
+            .where('password', '==', password)
+            .where('role', '==', 'admin')
+            .limit(1).get();
+
+        if (snapshot.empty) {
+            return res.json({ success: false, message: 'Invalid Admin ID or Password.' });
+        }
+
+        const doc = snapshot.docs[0];
+        const user = doc.data();
+
+        req.session.user = {
+            id: doc.id,
+            name: user.name,
+            role: user.role,
+            admissionNumber: user.admission_number
+        };
+
+        res.json({ success: true, role: 'admin', name: user.name });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// LOGOUT
+router.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.json({ success: true });
+});
+
+// CHECK SESSION
+router.get('/me', (req, res) => {
+    if (req.session.user) {
+        res.json({ success: true, user: req.session.user });
+    } else {
+        res.json({ success: false });
+    }
+});
+
+// SET PASSWORD FOR STUDENT
+router.post('/set-password', async (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'student') {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.trim() === '') {
+        return res.json({ success: false, message: 'Password cannot be empty.' });
+    }
+
+    try {
+        await db.collection('users').doc(req.session.user.id).update({
+            password: newPassword.trim()
+        });
+        res.json({ success: true, message: 'Password updated successfully!' });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+module.exports = router;

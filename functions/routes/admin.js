@@ -1,0 +1,276 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../database');
+
+function isAdmin(req, res, next) {
+    if (!req.session.user || req.session.user.role !== 'admin') {
+        return res.json({ success: false, message: 'Access denied.' });
+    }
+    next();
+}
+
+// Get admin info
+router.get('/me', isAdmin, (req, res) => {
+    res.json({ success: true, user: req.session.user });
+});
+
+// Get all students
+router.get('/students', isAdmin, async (req, res) => {
+    try {
+        const clSnapshot = await db.collection('users').where('role', '==', 'cohort_leader').get();
+        const cohortLeaders = {};
+        clSnapshot.docs.forEach(doc => {
+            cohortLeaders[doc.id] = doc.data().name;
+        });
+
+        const snapshot = await db.collection('users').where('role', '==', 'student').get();
+        const students = snapshot.docs.map(doc => {
+            const u = doc.data();
+            const sd = u.details || {};
+            const v = u.verification || {};
+            const a = u.approvals || {};
+
+            return {
+                id: doc.id,
+                name: u.name,
+                admission_number: u.admission_number,
+                course: u.course,
+                cohort_leader_id: u.cohort_leader_id,
+                cohort_leader_name: cohortLeaders[u.cohort_leader_id] || null,
+                form_status: sd.status,
+                printouts_taken: sd.printouts_taken || 0,
+                verification_status: v.status,
+                admin_approval: a.admin_approval,
+                final_approval: a.final_approval,
+                registration_number: a.registration_number,
+                cohort_approval: a.cohort_approval
+            };
+        });
+
+        students.sort((a, b) => b.id.localeCompare(a.id)); // Not strictly numeric desc, but sorts reverse chronologically if IDs are chronological
+        res.json({ success: true, students });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Get all Cohort Leaders
+router.get('/cohort-leaders', isAdmin, async (req, res) => {
+    try {
+        const studentSnapshot = await db.collection('users').where('role', '==', 'student').get();
+        const studentCounts = {};
+        studentSnapshot.docs.forEach(doc => {
+            const clId = doc.data().cohort_leader_id;
+            if (clId) {
+                studentCounts[clId] = (studentCounts[clId] || 0) + 1;
+            }
+        });
+
+        const clSnapshot = await db.collection('users').where('role', '==', 'cohort_leader').get();
+        const cohortLeaders = clSnapshot.docs.map(doc => {
+            const u = doc.data();
+            return {
+                id: doc.id,
+                name: u.name,
+                admission_number: u.admission_number,
+                password: u.password,
+                student_count: studentCounts[doc.id] || 0
+            };
+        });
+
+        res.json({ success: true, cohortLeaders });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Assign Cohort Leader to student
+router.post('/assign-cohort-leader', isAdmin, async (req, res) => {
+    const { studentId, cohortLeaderId } = req.body;
+    if (!studentId || !cohortLeaderId) {
+        return res.json({ success: false, message: 'Please select both student and cohort leader.' });
+    }
+
+    try {
+        await db.collection('users').doc(studentId).update({ cohort_leader_id: cohortLeaderId });
+
+        // Update all existing messages for this student to the new cohort leader
+        const msgSnapshot = await db.collection('messages').where('student_id', '==', studentId).get();
+        const batch = db.batch();
+        msgSnapshot.docs.forEach(doc => {
+            batch.update(doc.ref, { cohort_leader_id: cohortLeaderId });
+        });
+        await batch.commit();
+
+        res.json({ success: true, message: 'Cohort Leader assigned and messages transferred successfully!' });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Verify student documents (Stubbed/Removed)
+router.post('/verify/:id', isAdmin, (req, res) => {
+    res.json({ success: false, message: 'Verification feature removed.' });
+});
+
+// Final approve student (Stubbed/Removed)
+router.post('/final-approve/:id', isAdmin, (req, res) => {
+    res.json({ success: false, message: 'Final approval feature removed.' });
+});
+
+// Get stats
+router.get('/stats', isAdmin, async (req, res) => {
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        let totalStudents = 0;
+        let totalCohortLeaders = 0;
+        let pendingVerification = 0;
+        let approved = 0;
+
+        usersSnapshot.docs.forEach(doc => {
+            const u = doc.data();
+            if (u.role === 'cohort_leader') {
+                totalCohortLeaders++;
+            } else if (u.role === 'student') {
+                totalStudents++;
+                const status = (u.details && u.details.status) ? u.details.status : null;
+                if (!status || status === 'draft') {
+                    pendingVerification++;
+                } else if (status === 'submitted') {
+                    approved++;
+                }
+            }
+        });
+
+        res.json({ success: true, stats: { totalStudents, totalCohortLeaders, pendingVerification, approved } });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Add a new Cohort Leader
+router.post('/cohort-leader', isAdmin, async (req, res) => {
+    const { name, cohortLeaderId, password } = req.body;
+
+    if (!name || !cohortLeaderId || !password) {
+        return res.json({ success: false, message: 'Please fill in all fields.' });
+    }
+
+    try {
+        const checkSnapshot = await db.collection('users').where('admission_number', '==', cohortLeaderId).limit(1).get();
+        if (!checkSnapshot.empty) {
+            return res.json({ success: false, message: 'Cohort Leader ID already registered.' });
+        }
+
+        await db.collection('users').add({
+            name,
+            admission_number: cohortLeaderId,
+            password,
+            role: 'cohort_leader'
+        });
+
+        res.json({ success: true, message: 'Cohort Leader created successfully!' });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Add a single new student manually
+router.post('/student', isAdmin, async (req, res) => {
+    const { name, admissionNumber, course } = req.body;
+
+    if (!name || !admissionNumber || !course) {
+        return res.json({ success: false, message: 'Please fill in all fields.' });
+    }
+
+    try {
+        const checkSnapshot = await db.collection('users').where('admission_number', '==', admissionNumber).limit(1).get();
+        if (!checkSnapshot.empty) {
+            return res.json({ success: false, message: 'Admission Number already exists.' });
+        }
+
+        await db.collection('users').add({
+            name,
+            admission_number: admissionNumber,
+            course,
+            role: 'student'
+        });
+
+        res.json({ success: true, message: 'Student created successfully!' });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Edit student details manually
+router.put('/student/:id', isAdmin, async (req, res) => {
+    const { name, admissionNumber, course } = req.body;
+    const studentId = req.params.id;
+
+    if (!name || !admissionNumber || !course) {
+        return res.json({ success: false, message: 'Name, Admission No., and Course are required.' });
+    }
+
+    try {
+        const checkSnapshot = await db.collection('users').where('admission_number', '==', admissionNumber).get();
+        const conflictingDoc = checkSnapshot.docs.find(d => d.id !== studentId);
+        if (conflictingDoc) {
+            return res.json({ success: false, message: 'Admission Number is already used by another user.' });
+        }
+
+        await db.collection('users').doc(studentId).update({
+            name,
+            admission_number: admissionNumber,
+            course
+        });
+
+        res.json({ success: true, message: 'Student details updated successfully!' });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Delete a student and cascade to all their data
+router.delete('/student/:id', isAdmin, async (req, res) => {
+    const studentId = req.params.id;
+
+    try {
+        await db.collection('users').doc(studentId).delete();
+
+        // Delete associated messages
+        const msgSnapshot = await db.collection('messages').where('student_id', '==', studentId).get();
+        const batch = db.batch();
+        msgSnapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+
+        res.json({ success: true, message: 'Student completely deleted.' });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+// Delete a Cohort Leader
+router.delete('/cohort-leader/:id', isAdmin, async (req, res) => {
+    const clId = req.params.id;
+
+    try {
+        // Remove cohort leader assignment from students
+        const studentSnapshot = await db.collection('users').where('role', '==', 'student').where('cohort_leader_id', '==', clId).get();
+        const batch = db.batch();
+        studentSnapshot.docs.forEach(doc => {
+            batch.update(doc.ref, { cohort_leader_id: null });
+        });
+        await batch.commit();
+
+        // Delete cohort leader user
+        await db.collection('users').doc(clId).delete();
+
+        res.json({ success: true, message: 'Cohort Leader deleted.' });
+    } catch (err) {
+        res.json({ success: false, message: 'Database error.' });
+    }
+});
+
+module.exports = router;

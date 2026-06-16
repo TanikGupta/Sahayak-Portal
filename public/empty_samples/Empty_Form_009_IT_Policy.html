@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><title>Form 009</title>
+    <style>
+        @page { margin: 12mm 16mm; size: A4; }
+        * { box-sizing: border-box; margin:0; padding:0; }
+        body { font-family: Arial, sans-serif; font-size: 14.5px; color: #000; display: flex; flex-direction: column; height: 97vh; }
+        .fno { text-align: right; font-size: 11px; margin-bottom: 2px; }
+        .univ { text-align: center; font-size: 19px; font-weight: bold; margin-bottom: 4px; }
+        .outer { border: 1px solid #000; flex-grow:1; display:flex; flex-direction:column; }
+        .title-cell { text-align: center; padding: 6px; font-weight: bold; font-size: 16px; border-bottom: 1px solid #000; }
+        .gen-head { text-align: center; font-weight: bold; text-decoration: underline; padding: 5px; border-bottom: 1px solid #000; font-size: 14px; }
+        .gen-body { padding: 6px 12px; font-size: 13.5px; line-height: 1.5; border-bottom: 1px solid #000; }
+        table.mt { width: 100%; border-collapse: collapse; flex-grow: 1; display: table; }
+        table.mt td { border: 1px solid #000; padding: 5px 6px; font-size: 13.5px; vertical-align: middle; }
+        table.mt td.num { text-align: center; font-weight: bold; width: 28px; }
+        .fitbox { display: inline-block; width: 14px; height: 14px; border: 1px solid #000; vertical-align: middle; margin-right: 6px; flex-shrink:0; }
+        .fit-row { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 6px; font-size: 13.5px; }
+        .sg4 { display: grid; grid-template-columns: 1.5fr 1fr 1.5fr 1fr; gap: 10px; margin-top: 10px; padding-top: 5px; text-align: center; font-size: 12px; }
+        .sl { border-top: 1px solid #000; padding-top: 5px; margin-top: 25px; }
+        .note { font-size: 10.5px; font-style: italic; margin-top: 4px; }
+    </style></head><body onload="window.print()">
+    <div class="fno">Academic/Form/009</div>
+    <div class="univ">JK Lakshmipat University, Jaipur</div>
+    <div class="outer">
+        <div class="title-cell">MEDICAL CERTIFICATE<br><span style="font-size:10.5px;font-weight:normal;">(to be issued by a Registered Medical Practitioner)</span></div>
+        <div class="gen-head">GENERAL EXPECTATIONS</div>
+        <div class="gen-body">
+            Candidates should have a good general physique. In particular,<br>
+            &square;&nbsp; Chest measurement should not be less than 70 cm, with satisfactory limits of expansion and contraction.<br>
+            &square;&nbsp; Vision should be normal. In case of defective vision, it should be corrected to 6/9 in both eyes or 6/6 in the better eye. Colour blind and uniocular (having vision in only one eye) persons are restricted from admission to certain courses.<br>
+            &square;&nbsp; Hearing should be normal. Defective hearing should be corrected.<br>
+            &square;&nbsp; Heart and lungs should not have any abnormality and there should be no history of mental illness and epileptic fits.
+        </div>
+        <table class="mt">
+            <tr><td class="num">1</td><td colspan="5">Name of the candidate: &nbsp; <strong>&nbsp;</strong></td><td>Gender: &nbsp;<strong>&nbsp;</strong></td></tr>
+            <tr><td class="num">2</td><td colspan="6">Identification Mark (a mole, scar, or birthmark) if any &nbsp;&nbsp; <strong>&nbsp;</strong></td></tr>
+            <tr><td class="num">3</td><td colspan="6">Major illness/operation, if any (specify nature of illness/operation) &nbsp;&nbsp; <strong>&nbsp;</strong></td></tr>
+            <tr><td class="num">4</td><td colspan="2">Height in cm: &nbsp;<strong>&nbsp;</strong></td><td colspan="2">Weight in kg: &nbsp;<strong>&nbsp;</strong></td><td colspan="2">Blood Group: &nbsp;<strong>&nbsp;</strong></td></tr>
+            <tr><td class="num">5</td><td>History</td><td colspan="2">(a) Mental illness</td><td colspan="3">(b) Epileptic Fit</td></tr>
+            <tr><td class="num">6</td><td colspan="3">Chest (a) Inspiration in cm &nbsp;<strong>&nbsp;</strong></td><td colspan="3">(b) Expiration in cm &nbsp;<strong>&nbsp;</strong></td></tr>
+            <tr><td class="num">7</td><td colspan="6">Hearing &nbsp;<strong>&nbsp;</strong></td></tr>
+            <tr><td class="num">8</td><td>Vision with or without glasses:</td><td colspan="2">Right Eye &nbsp;<strong>&nbsp;</strong></td><td>Left Eye &nbsp;<strong>&nbsp;</strong></td><td>Colour Blindness</td><td>Uniocular vision (having vision in only one eye)</td></tr>
+            <tr><td class="num" style="vertical-align: top; padding-top: 8px;">9</td><td colspan="6" style="height: 38px; vertical-align: top; padding-top: 8px;">Respiratory System (Remarks): &nbsp;<strong>&nbsp;</strong></td></tr>
+            <tr><td class="num" style="vertical-align: top; padding-top: 8px;">10</td><td colspan="6" style="height: 38px; vertical-align: top; padding-top: 8px;">Nervous System (Remarks):</td></tr>
+            <tr><td class="num">11</td><td colspan="3">Heart &nbsp;(a) Sounds &nbsp;<strong>&nbsp;</strong></td><td colspan="3">(b) Murmur &nbsp;<strong>&nbsp;</strong></td></tr>
+            <tr><td class="num">12</td><td colspan="2">Abdomen<br>(a) Liver<br>(b) Spleen</td><td colspan="2">Hernia</td><td colspan="2">Hydrocele</td></tr>
+            <tr><td colspan="7" style="padding:10px;">
+                <div style="margin-bottom:8px;"><strong>Any other defects:</strong> &nbsp; <strong>&nbsp;</strong></div>
+                <br>
+                <div style="text-align:center;font-weight:bold;margin:8px 0;">Certificate of Medical Fitness</div>
+                <div class="fit-row"><span class="fitbox"></span><span>The candidate fulfills the prescribed standard physical fitness, and medical fitness and is FIT for admission to full-time degree programs.</span></div>
+                <div class="fit-row"><span class="fitbox"></span><span>The candidate does not fulfill the prescribed standard of physical fitness/medical fitness and is unfit/temporarily unfit for admission due to the following defects:</span></div>
+                <br>
+                <div class="sg4">
+                    <div><div class="sl">Name of the Doctor<br><span style="font-size:9.5px;">&nbsp;</span></div></div>
+                    <div><div class="sl">Regn. No</div></div>
+                    <div><div class="sl">Signature with date</div></div>
+                    <div><div class="sl">Seal</div></div>
+                </div>
+            </td></tr>
+        </table>
+    </div>
+    <div class="note">Note: This format is referred from https://josaa.nic.in/.</div>
+    </body></html>

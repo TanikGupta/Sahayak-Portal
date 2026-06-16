@@ -1,0 +1,59 @@
+<!DOCTYPE html><html><head><title>Form 010</title>
+    <style>
+        @page { margin: 18mm 20mm; size: A4; }
+        * { box-sizing: border-box; margin:0; padding:0; }
+        body { font-family: 'Book Antiqua', Georgia, serif; font-size: 17px; color: #000; display: flex; flex-direction: column; height: 97vh; }
+        .fno { text-align: right; font-size: 14px; margin-bottom: 10px; }
+        .title { text-align: center; font-weight: bold; font-size: 22px; margin-bottom: 15px; text-decoration: underline; }
+        .para { margin: 10px 0; line-height: 1.6; text-align: justify; }
+        .field-row { margin: 12px 0; line-height: 2.2; }
+        .fl { border-bottom: 1px solid #000; display: inline-block; vertical-align: baseline; padding: 0 5px; font-weight: bold; }
+        .aadhar-t { border-collapse: collapse; display: inline-table; vertical-align: middle; margin-left: 10px; }
+        .sign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: auto; padding-top: 25px; }
+        .sl { border-top: 1px solid #000; padding-top: 6px; font-size: 16px; margin-top: 0; }
+        .sign-name { font-size: 16px; margin-top: 6px; font-weight: bold; }
+        .place-date { margin-top: 20px; line-height: 2.2; font-size: 17px; font-weight: bold; }
+    </style></head><body onload="window.print()">
+    <div class="fno">Academic/Form/010</div>
+    <div class="title">Undertaking for APAAR ID & Aadhar Details</div>
+    <div class="para">I hereby provide my consent to use my APAAR ID and Aadhar Details for the degree certificates, mark sheets, and all other academic documents issued to me by JK Lakshmipat University, Jaipur. I authorize the University to use those details.</div>
+    <div class="para">Also, I declare that in case of any change in my APAAR ID or Aadhar Details, I will submit the revised details along with an updated card to the University. In case of failing to submit the revised details, the University can use my earlier submitted details for all such communications.</div>
+    <div class="para" style="font-weight: bold;">I will update the KYC on Digilocker.</div>
+    <div class="para">My details are provided as follows:</div>
+    <div class="field-row"><strong>Aadhar Number:</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<table class="aadhar-t"><tr>&nbsp;</tr></table></div>
+    <div class="field-row"><strong>APAAR ID:</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<table class="aadhar-t"><tr>&nbsp;</tr></table></div>
+    <div class="field-row">
+        <div style="display:inline-block; line-height: 1.2; vertical-align: bottom;">
+            <strong>Aadhar Name (in block letters)</strong><br>
+            <span style="font-size: 13px; font-weight: bold;">(as per APAAR ID)</span>
+        </div>
+        &nbsp;&nbsp;<span class="fl" style="min-width:330px;">&nbsp;</span>
+    </div>
+    <div class="field-row"><strong>Father's Name (in block letters)</strong> &nbsp;
+    <span class="fl" style="min-width:350px;">&nbsp;</span></div>
+    <div class="field-row">
+        <div style="display:inline-block; line-height: 1.2; vertical-align: bottom;">
+            <strong>Date of Birth (dd/mm/yyyy)</strong><br>
+            <span style="font-size: 13px; font-weight: bold;">(as per APAAR ID)</span>
+        </div>
+        &nbsp;&nbsp;<span class="fl" style="min-width:140px;">&nbsp;</span>
+        <span style="display:inline-block; width: 40px;"></span>
+        <strong>Gender</strong> &nbsp;<span class="fl" style="min-width:120px;">&nbsp;</span>
+    </div>
+    <div class="sign-grid">
+        <div>
+            <div class="sl">(Signature of the student)<br>Full Name</div>
+            <div class="sign-name">&nbsp;</div>
+        </div>
+        <div>
+            <div class="sl">(Signature of the parent/guardian)<br>Full Name</div>
+            <div class="sign-name">&nbsp;</div>
+        </div>
+    </div>
+    <div class="place-date">
+        <div>Place: &nbsp;</div>
+        <div>Date: &hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;</div>
+    </div>
+    </body></html>

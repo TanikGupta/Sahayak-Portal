@@ -1,0 +1,389 @@
+<!DOCTYPE html><html><head><title>Form 008 - Registration Form</title>
+    <style>
+        @page { margin: 6mm 10mm; size: A4; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; color: #0f172a; line-height: 1.35; background: #fff; }
+        .fno { text-align: right; font-size: 8px; font-weight: 700; color: #64748b; margin-bottom: 2px; }
+        
+        /* Header Styling */
+        .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px solid #0f2c59; padding-bottom: 4px; margin-bottom: 4px; position: relative; }
+        .header-left { display: flex; flex-direction: column; }
+        .univ-title { font-size: 20px; font-weight: 800; color: #0f2c59; letter-spacing: -0.5px; }
+        .univ-sub { font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        
+        /* Enlarged & Stylized Logo Container */
+        .logo-container { display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #cbd5e1; border-left: 4.5px solid #0f2c59; border-radius: 8px; padding: 6px 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.06); }
+        .logo-img { height: 85px; width: auto; object-fit: contain; }
+        
+        /* Watermark Background */
+        .page-wrapper { position: relative; min-height: 284mm; padding: 0; display: flex; flex-direction: column; }
+        .watermark { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 440px; height: 440px; background-image: url('/Jklulogo.png'); background-repeat: no-repeat; background-position: center; background-size: contain; opacity: 0.05; pointer-events: none; z-index: -1; }
+        
+        .form-title { text-align: center; font-size: 12.5px; font-weight: 800; color: #fff; background: #0f2c59; text-transform: uppercase; margin: 4px 0; padding: 4px; border-radius: 4px; letter-spacing: 0.5px; }
+        .section-divider { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: #0f2c59; background: #f0f4f8; padding: 4px 8px; margin: 6px 0 2px 0; border-radius: 3px; border-left: 3.5px solid #0f2c59; }
+        
+        /* Grids & Fields - Whitespace Reduced, Text Enlarged */
+        .grid-row { display: flex; gap: 6px; margin-bottom: 2px; }
+        .grid-col { flex: 1; display: flex; flex-direction: column; }
+        .detail-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 2px 6px; display: flex; flex-direction: column; justify-content: center; min-height: 28px; }
+        .detail-item .label { font-size: 10.5px; text-transform: uppercase; font-weight: 800; color: #475569; margin-bottom: 1px; letter-spacing: 0.2px; }
+        .detail-item .value { font-size: 13.5px; font-weight: 700; color: #0f2c59; }
+        
+        /* Table Styling */
+        table.docs { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 11.5px; }
+        table.docs th { border: 1px solid #cbd5e1; padding: 4px 6px; background: #0f2c59; color: #fff; font-weight: 700; text-align: center; font-size: 11.5px; }
+        table.docs td { border: 1px solid #cbd5e1; padding: 4px 6px; vertical-align: middle; }
+        table.docs tr:nth-child(even) { background: #f8fafc; }
+        .table-checkbox { width: 12px; height: 12px; border: 1.5px solid #0f2c59; border-radius: 2px; margin: auto; background: #fff; }
+        
+        .declaration { border: 1px solid #cbd5e1; border-left: 3px solid #0f2c59; padding: 4px 6px; background: #f8fafc; border-radius: 4px; font-size: 11.5px; line-height: 1.35; margin-top: 4px; color: #1e293b; }
+        .signature-section { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; padding-top: 10px; text-align: center; }
+        .signature-box { border-top: 1px dashed #64748b; padding-top: 3px; font-size: 11.5px; font-weight: 700; color: #0f2c59; }
+        
+        .office-use { border: 1.5px solid #0f2c59; background: #f1f5f9; border-radius: 4px; padding: 4px 6px; margin-top: 6px; font-size: 11.5px; }
+        .page-break { page-break-before: always; }
+    </style></head><body onload="window.print()">
+
+    <div class="page-wrapper">
+        <div class="watermark"></div>
+        <div class="fno">Form No.: Academic/Form/008</div>
+        <div class="header-container">
+            <div class="header-left">
+                <span class="univ-title">JK Lakshmipat University, Jaipur</span>
+                <span class="univ-sub" style="text-transform: uppercase;">Registration Form (New Admission)</span>
+                <div style="margin-top: 10px; border: 1.5px solid #1e293b; padding: 6px 12px; font-weight: 700; font-size: 11px; border-radius: 4px; color: #0f2c59; display: inline-block;">
+                    DATE OF REGISTRATION: <span style="display:inline-block; width: 120px; border-bottom: 1px dashed #1e293b; vertical-align: bottom; height: 12px;"></span>
+                </div>
+            </div>
+            <div class="logo-container">
+                <img src="/Jklulogo.png" class="logo-img" onerror="this.parentNode.style.display='none'" />
+            </div>
+        </div>
+
+        <!-- Academic Details Section -->
+        <div class="section-divider">Academic Program & Details</div>
+        <div class="grid-row">
+            <div class="grid-col" style="flex: 1.5;">
+                <div class="detail-item">
+                    <span class="label">Application Form No.</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Aadhar Card Number</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col" style="flex: 1.5;">
+                <div class="detail-item">
+                    <span class="label">Academic Program / Course</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">APAAR / ABC ID</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Academic Year</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Specialization / Branch</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Semester / Term</span>
+                    <span class="value">1st Semester</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider">1. Personal Details</div>
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Student Full Name</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Date of Birth</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Blood Group</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Gender</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Category</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Mobile Number</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Email Address</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Permanent Address</span>
+                    <span class="value">
+                        &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; City: &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; Dist: &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; State: &nbsp;
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider">2. Parent's Details</div>
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Father's Name</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Mother's Name</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Father's Occupation, Designation & Company</span>
+                    <span class="value">&nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; &nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Mother's Occupation, Designation & Company</span>
+                    <span class="value">&nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; &nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Father's Contact Details</span>
+                    <span class="value">Mobile: &nbsp; &nbsp;|&nbsp; Landline: &nbsp;</span>
+                    <span class="value" style="font-size: 10px; color: #555;">Email: &nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Mother's Contact Details</span>
+                    <span class="value">Mobile: &nbsp;</span>
+                    <span class="value" style="font-size: 10px; color: #555;">Email: &nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider">3. Guardian's Details</div>
+        <div class="grid-row">
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Local Guardian Address (Mandatory for Hostelers)</span>
+                    <span class="value">
+                        &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; City: &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; Dist: &nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; State: &nbsp;
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider">4. Emergency Contact Details</div>
+        <div class="grid-row">
+            <div class="grid-col" style="flex: 1.5;">
+                <div class="detail-item">
+                    <span class="label">Emergency Contact Name</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col">
+                <div class="detail-item">
+                    <span class="label">Relationship</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col" style="flex: 1.2;">
+                <div class="detail-item">
+                    <span class="label">Emergency Contact Mobile</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="declaration">
+            <strong>Self-Declaration:</strong><br>
+            1. All the details mentioned above are correct and my admission may be canceled if the information is found incorrect.<br>
+            2. I have filled the undertaking for anti-ragging online as per UGC guidelines, and submitting the same along with this form. I am also submitting Aadhar undertaking and all other documents as required by the University.<br>
+            3. I have read all the University regulations and I will abide by the same throughout the program. Also, I will abide by all the rules and regulations announced by the University from time to time.
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:12px; font-weight:600; font-size:12.5px; color:#475569;">
+            <span>Place: Jaipur</span>
+            <span>Date: .......................</span>
+        </div>
+
+        <div style="margin-top: 35px;">
+            <div class="signature-section">
+                <div class="signature-box">Signature of Student</div>
+                <div class="signature-box">Admin Executive</div>
+                <div class="signature-box">Faculty In-charge</div>
+            </div>
+
+            <div class="office-use">
+                <strong>For Office Use Only:</strong><br>
+                <div style="display:flex; justify-content:space-between; margin-top:4px;">
+                    <span>Approved for Registration: [ &nbsp; ] Yes &nbsp;&nbsp;&nbsp; [ &nbsp; ] No</span>
+                    <span>Roll Number Assigned: &hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;</span>
+                    <span style="font-weight:bold;">Dean - Academic Affairs</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+    <div class="page-wrapper">
+        <div class="watermark"></div>
+        <div class="fno">Form No.: Academic/Form/008</div>
+        <div class="header-container">
+            <div class="header-left">
+                <span class="univ-title">JK Lakshmipat University, Jaipur</span>
+                <span class="univ-sub">Documents Submission Detail</span>
+            </div>
+            <div class="logo-container">
+                <img src="/Jklulogo.png" class="logo-img" onerror="this.parentNode.style.display='none'" />
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="grid-col" style="flex: 1.5;">
+                <div class="detail-item">
+                    <span class="label">Application Form No.</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col" style="flex: 2;">
+                <div class="detail-item">
+                    <span class="label">Student Name (Block Letters)</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-row" style="margin-top:6px;">
+            <div class="grid-col" style="flex: 2;">
+                <div class="detail-item">
+                    <span class="label">Academic Program</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+            <div class="grid-col" style="flex: 1.5;">
+                <div class="detail-item">
+                    <span class="label">Specialization / Branch</span>
+                    <span class="value">&nbsp;</span>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top:8px; font-weight:600; font-size:12.5px; color:#475569;">
+            I understand that the following documents are necessary to be submitted to be eligible for admission in the above programme of JK Lakshmipat University, Jaipur.
+        </p>
+
+        <table class="docs">
+            <thead>
+                <tr>
+                    <th style="width:35px;">S. No.</th>
+                    <th style="text-align:left;">Documents Required</th>
+                    <th style="width:90px;">Not Submitted</th>
+                    <th style="width:90px;">Submitted</th>
+                </tr>
+            </thead>
+            <tbody>
+            &nbsp;</td><td>&nbsp;</td><td><div class="table-checkbox"></div></td><td><div class="table-checkbox"></div></td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div class="grid-row" style="margin-top:12px;">
+            <div class="grid-col">
+                <div class="detail-item" style="min-height:80px; background:#fff; border: 1px solid #94a3b8; justify-content: flex-start; padding-top: 8px;">
+                    <span class="label">Reason(s) for non-submission of the certificate(s) as marked above:</span>
+                    <span class="value"></span>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top:8px; font-size:12px; line-height:1.4; color:#475569;">
+            I, hereby undertake that I will submit the incomplete document(s) mentioned above latest by 
+            <span style="display:inline-block; border-bottom:1px solid #1e293b; width:120px; height:14px;"></span>, to the University. I understand that the admission given to me is only provisional and failure to submit the documents will lead to cancellation of admission.
+        </p>
+
+        <div style="margin-top: 40px;">
+            <div style="display:flex; justify-content:space-between; font-weight:600; font-size:12.5px; color:#475569;">
+                <span>Date: &hellip;&hellip;&hellip;&hellip;&hellip;</span>
+                <span>Place: Jaipur</span>
+                <span>(Signature of the Student)</span>
+            </div>
+
+            <div class="office-use" style="margin-top:10px; border:1px dashed #0f2c59; background:#fff;">
+                <strong>For Office Use Only</strong><br>
+                <span style="font-size:11px; color:#475569;">Remarks:</span>
+                <div style="height:15px;"></div>
+                <div style="font-weight:700; margin-top: 10px;">
+                    <div style="margin-bottom: 12px; font-size: 11.5px;">Checked and Verified by:</div>
+                    <div style="display:flex; justify-content:space-between; font-size: 11.5px;">
+                        <span>Name: &nbsp;</span>
+                        <span>Signature: &nbsp;</span>
+                        <span>Date: .......................</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body></html>

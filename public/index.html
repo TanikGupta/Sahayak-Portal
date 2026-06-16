@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahayak Portel ( Student Documentation Help )</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Background Slideshow -->
+    <div class="bg-slideshow">
+        <div class="slide active" style="background-image: url('/bg_1.jpg')"></div>
+        <div class="slide" style="background-image: url('/bg_2.jpg')"></div>
+        <div class="slide" style="background-image: url('/bg_3.jpg')"></div>
+        <div class="slide" style="background-image: url('/bg_4.jpg')"></div>
+        <div class="slide" style="background-image: url('/bg_5.jpg')"></div>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <div class="auth-container">
+        <div class="auth-box">
+
+            <div class="portal-header">
+                <img src="/Jklulogo.png" alt="College Logo" class="college-logo" />
+                <h1 style="font-size: 22px; margin-bottom: 2px;">Sahayak Portel</h1>
+                <p style="font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 4px;">Student Documentation Help</p>
+                <p style="font-size: 11px; color: #888;">Academic Affairs</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="login-tabs">
+                <button class="tab-btn active" onclick="switchTab('student', event)">🎓 Student</button>
+                <button class="tab-btn" onclick="switchTab('cohort-leader', event)">👨‍🏫 Cohort Leader</button>
+                <button class="tab-btn" onclick="switchTab('admin', event)">⚙️ Admin</button>
+            </div>
+
+            <!-- Student Tab -->
+            <div id="tab-student">
+                <!-- Student Login -->
+                <div id="studentLogin">
+                    <h2>Student Login</h2>
+                    <div id="studentNameFields">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="loginName" placeholder="Enter your full name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Course</label>
+                            <select id="loginCourse" onchange="autoFillStudentLoginPrefix()">
+                                <option value="">-- Select Your Course --</option>
+                                <option value="B.TECH">B.Tech</option>
+                                <option value="BBA">BBA</option>
+                                <option value="B.DES">B.Des</option>
+                                <option value="BCA">BCA</option>
+                                <option value="M.TECH">M.Tech</option>
+                                <option value="M.DES">M.Des</option>
+                                <option value="MBA">MBA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Application Number</label>
+                        <input type="text" id="loginAdmission" placeholder="e.g. JKLU/B.TECH/2026/0001" onblur="checkStudentPasswordStatus()" />
+                    </div>
+
+                    <div id="studentPasswordField" style="display: none;" class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" />
+                    </div>
+
+                    <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
+                        <label style="display: flex; justify-content: space-between; align-items: center;">
+                            Security Check 
+                            <span onclick="loadCaptcha()" style="cursor:pointer; font-size: 14px;" title="Refresh CAPTCHA">🔄</span>
+                        </label>
+                        <div style="font-weight: bold; margin-bottom: 8px; color: #2980b9;" class="captcha-question">Loading CAPTCHA...</div>
+                        <input type="text" id="studentCaptcha" placeholder="Enter your answer" />
+                    </div>
+
+                    <div id="studentLoginError" class="error-msg"></div>
+                    <button class="btn-primary" onclick="handleStudentLogin()">Login</button>
+                </div>
+            </div>
+
+            <!-- Cohort Leader Tab -->
+            <div id="tab-cohort-leader" style="display:none;">
+                <h2>Cohort Leader Login</h2>
+                <div class="form-group">
+                    <label>Cohort Leader ID</label>
+                    <input type="text" id="cohortLeaderId" placeholder="Enter your Cohort Leader ID" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="cohortLeaderPassword" placeholder="Enter your password" />
+                </div>
+
+                <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        Security Check 
+                        <span onclick="loadCaptcha()" style="cursor:pointer; font-size: 14px;" title="Refresh CAPTCHA">🔄</span>
+                    </label>
+                    <div style="font-weight: bold; margin-bottom: 8px; color: #2980b9;" class="captcha-question">Loading CAPTCHA...</div>
+                    <input type="text" id="cohortLeaderCaptcha" placeholder="Enter your answer" />
+                </div>
+
+                <div id="cohortLeaderLoginError" class="error-msg"></div>
+                <button class="btn-primary" onclick="handleCohortLeaderLogin()">Login</button>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="tab-admin" style="display:none;">
+                <h2>Admin Login</h2>
+                <div class="form-group">
+                    <label>Admin ID</label>
+                    <input type="text" id="adminId" placeholder="Enter your Admin ID" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter your password" />
+                </div>
+
+                <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
+                    <label style="display: flex; justify-content: space-between; align-items: center;">
+                        Security Check 
+                        <span onclick="loadCaptcha()" style="cursor:pointer; font-size: 14px;" title="Refresh CAPTCHA">🔄</span>
+                    </label>
+                    <div style="font-weight: bold; margin-bottom: 8px; color: #2980b9;" class="captcha-question">Loading CAPTCHA...</div>
+                    <input type="text" id="adminCaptcha" placeholder="Enter your answer" />
+                </div>
+
+                <div id="adminLoginError" class="error-msg"></div>
+                <button class="btn-primary" onclick="handleAdminLogin()">Login</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        const slides = document.querySelectorAll('.bg-slideshow .slide');
+        let current = 0;
+        setInterval(() => {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }, 4000);
+    </script>
+
+</body>
+</html>
