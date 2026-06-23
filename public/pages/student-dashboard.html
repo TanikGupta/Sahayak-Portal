@@ -276,12 +276,7 @@
                         <div class="form-group"><label>State <span style="color: #c0392b;">*</span></label><input type="text" id="permanentState" placeholder="State" /></div>
                     </div>
                     
-                    <div class="form-group" style="margin-top:15px;"><label>Local/Guardian Address (Mandatory for Hostelers)</label><textarea id="localAddress" rows="2" placeholder="Local guardian address"></textarea></div>
-                    <div class="field-row">
-                        <div class="form-group"><label>Local City</label><input type="text" id="localCity" placeholder="City" /></div>
-                        <div class="form-group"><label>Local District</label><input type="text" id="localDistrict" placeholder="District" /></div>
-                        <div class="form-group"><label>Local State</label><input type="text" id="localState" placeholder="State" /></div>
-                    </div>
+                    <!-- Local/Guardian Address moved to Hostel section -->
 
                     <div class="section-divider">Emergency Contact</div>
                     <div class="field-row">
@@ -375,9 +370,14 @@
                                 <input type="text" id="hostelGuardianRelation" placeholder="e.g. Uncle, Aunt, Local Guardian" />
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-top:15px;">
                             <label>Local Guardian Address <span style="color: #c0392b;">*</span></label>
-                            <textarea id="hostelGuardianAddress" rows="2" placeholder="Full address of local guardian"></textarea>
+                            <textarea id="localAddress" rows="2" placeholder="Local guardian address"></textarea>
+                        </div>
+                        <div class="field-row">
+                            <div class="form-group"><label>Local City <span style="color: #c0392b;">*</span></label><input type="text" id="localCity" placeholder="City" /></div>
+                            <div class="form-group"><label>Local District <span style="color: #c0392b;">*</span></label><input type="text" id="localDistrict" placeholder="District" /></div>
+                            <div class="form-group"><label>Local State <span style="color: #c0392b;">*</span></label><input type="text" id="localState" placeholder="State" /></div>
                         </div>
                         <div class="form-group">
                             <label>Local Guardian Mobile <span style="color: #c0392b;">*</span></label>
@@ -1158,7 +1158,7 @@ async function loadProfileData() {
         set('permanentCity', d.permanent_city);
         set('permanentDistrict', d.permanent_district);
         set('permanentState', d.permanent_state);
-        set('localAddress', d.local_address);
+        set('localAddress', d.local_address || d.hostel_guardian_address || '');
         set('localCity', d.local_city);
         set('localDistrict', d.local_district);
         set('localState', d.local_state);
@@ -1193,7 +1193,6 @@ async function loadProfileData() {
         toggleTransportDetails();
         set('hostelGuardianName', d.hostel_guardian_name || '');
         set('hostelGuardianRelation', d.hostel_guardian_relation || '');
-        set('hostelGuardianAddress', d.hostel_guardian_address || '');
         loadPhoneField('hostelGuardianPhone', d.hostel_guardian_phone);
         set('hostelGuardianEmail', d.hostel_guardian_email || '');
         
@@ -1247,7 +1246,7 @@ function toggleHostelFields() {
             const fieldsToClear = [
                 'hostelAge', 'hostelMaritalStatus', 'hostelStayedBefore',
                 'hostelMedicalHistory', 'hostelMedicalDetails',
-                'hostelGuardianName', 'hostelGuardianRelation', 'hostelGuardianAddress', 'hostelGuardianPhone', 'hostelGuardianEmail'
+                'hostelGuardianName', 'hostelGuardianRelation', 'localAddress', 'localCity', 'localDistrict', 'localState', 'hostelGuardianPhone', 'hostelGuardianEmail'
             ];
             fieldsToClear.forEach(id => {
                 const el = document.getElementById(id);
@@ -1333,7 +1332,7 @@ function autoFillForms() {
 
     set('fHostelA_guardianName', g('hostelGuardianName'));
     set('fHostelA_guardianRelation', g('hostelGuardianRelation'));
-    set('fHostelA_guardianAddress', g('hostelGuardianAddress'));
+    set('fHostelA_guardianAddress', g('localAddress'));
     set('fHostelA_guardianPhone', g('hostelGuardianPhone'));
     set('f008_fOccupation', g('fatherOccupation'));
     set('f008_fDesignation', g('fatherDesignation'));
@@ -1403,7 +1402,7 @@ function updateProfileLock() {
         'localAddress', 'localCity', 'localDistrict', 'localState',
         'emergencyName','emergencyRelation','emergencyPhone','emergencyMobile',
         'availHostel', 'hostelAge', 'hostelMaritalStatus', 'hostelStayedBefore', 'hostelMedicalHistory', 'hostelMedicalDetails',
-        'hostelGuardianName', 'hostelGuardianRelation', 'hostelGuardianAddress', 'hostelGuardianPhone', 'hostelGuardianEmail',
+        'hostelGuardianName', 'hostelGuardianRelation', 'hostelGuardianPhone', 'hostelGuardianEmail',
         'availTransport', 'transportAltMobile', 'transportAddress', 'transportArea', 'transportPincode', 'transportGmapsLink',
         'transportPickupPoint', 'transportSuggestedPickup', 'transportDistance', 'transportLandmark', 'transportExpectedArea',
         'transportOtherStudents', 'transportApproxStudents'
@@ -1564,13 +1563,16 @@ function handleLockProfile() {
         hostelMedicalDetails: "Hostel Medical Details",
         hostelGuardianName: "Local Guardian Name",
         hostelGuardianRelation: "Relationship with Guardian",
-        hostelGuardianAddress: "Local Guardian Address",
+        localAddress: "Local Guardian Address",
+        localCity: "Local Guardian City",
+        localDistrict: "Local Guardian District",
+        localState: "Local Guardian State",
         hostelGuardianPhone: "Local Guardian Mobile",
         hostelGuardianEmail: "Local Guardian Email"
     };
 
     if (document.getElementById('availHostel')?.value === 'yes') {
-        requiredFields.push('hostelAge', 'hostelMaritalStatus', 'hostelStayedBefore', 'hostelMedicalHistory', 'hostelGuardianName', 'hostelGuardianRelation', 'hostelGuardianAddress', 'hostelGuardianPhone', 'hostelGuardianEmail');
+        requiredFields.push('hostelAge', 'hostelMaritalStatus', 'hostelStayedBefore', 'hostelMedicalHistory', 'hostelGuardianName', 'hostelGuardianRelation', 'localAddress', 'localCity', 'localDistrict', 'localState', 'hostelGuardianPhone', 'hostelGuardianEmail');
         if (document.getElementById('hostelMedicalHistory')?.value === 'yes') {
             requiredFields.push('hostelMedicalDetails');
         }
@@ -1699,7 +1701,7 @@ async function saveProfile(status) {
         hostelMedicalDetails: g('hostelMedicalDetails') || null,
         hostelGuardianName: g('hostelGuardianName') || null,
         hostelGuardianRelation: g('hostelGuardianRelation') || null,
-        hostelGuardianAddress: g('hostelGuardianAddress') || null,
+        hostelGuardianAddress: `${g('localAddress')}, ${g('localCity')}, ${g('localDistrict')}, ${g('localState')}`,
         hostelGuardianPhone: getPhoneVal('hostelGuardianPhone'),
         hostelGuardianEmail: g('hostelGuardianEmail') || null,
         availTransport: g('availTransport') || 'no',
