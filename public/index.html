@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sahayak Portel ( Student Documentation Help )</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://www.google.com/recaptcha/api.js?render=6Leg9i4tAAAAABGUYzbLq1nDysawl-y0vSFnWU9F"></script>
 </head>
 <body>
 
@@ -70,14 +71,7 @@
                         <input type="password" id="loginPassword" placeholder="Enter your password" />
                     </div>
 
-                    <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
-                        <label style="display: flex; justify-content: space-between; align-items: center;">
-                            Security Check 
-                            <span onclick="loadCaptcha()" style="cursor:pointer; font-size: 14px;" title="Refresh CAPTCHA">🔄</span>
-                        </label>
-                        <div style="font-weight: bold; margin-bottom: 8px; color: #2980b9;" class="captcha-question">Loading CAPTCHA...</div>
-                        <input type="text" id="studentCaptcha" placeholder="Enter your answer" />
-                    </div>
+
 
                     <div id="studentLoginError" class="error-msg"></div>
                     <button class="btn-primary" onclick="handleStudentLogin()">Login</button>
@@ -96,14 +90,7 @@
                     <input type="password" id="cohortLeaderPassword" placeholder="Enter your password" />
                 </div>
 
-                <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
-                    <label style="display: flex; justify-content: space-between; align-items: center;">
-                        Security Check 
-                        <span onclick="loadCaptcha()" style="cursor:pointer; font-size: 14px;" title="Refresh CAPTCHA">🔄</span>
-                    </label>
-                    <div style="font-weight: bold; margin-bottom: 8px; color: #2980b9;" class="captcha-question">Loading CAPTCHA...</div>
-                    <input type="text" id="cohortLeaderCaptcha" placeholder="Enter your answer" />
-                </div>
+
 
                 <div id="cohortLeaderLoginError" class="error-msg"></div>
                 <button class="btn-primary" onclick="handleCohortLeaderLogin()">Login</button>
@@ -121,14 +108,7 @@
                     <input type="password" id="adminPassword" placeholder="Enter your password" />
                 </div>
 
-                <div class="form-group" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
-                    <label style="display: flex; justify-content: space-between; align-items: center;">
-                        Security Check 
-                        <span onclick="loadCaptcha()" style="cursor:pointer; font-size: 14px;" title="Refresh CAPTCHA">🔄</span>
-                    </label>
-                    <div style="font-weight: bold; margin-bottom: 8px; color: #2980b9;" class="captcha-question">Loading CAPTCHA...</div>
-                    <input type="text" id="adminCaptcha" placeholder="Enter your answer" />
-                </div>
+
 
                 <div id="adminLoginError" class="error-msg"></div>
                 <button class="btn-primary" onclick="handleAdminLogin()">Login</button>

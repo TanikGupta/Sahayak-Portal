@@ -10,25 +10,7 @@ function switchTab(tab, event) {
     if (event && event.target) event.target.classList.add('active');
 }
 
-async function loadCaptcha() {
-    try {
-        const res = await fetch('/api/auth/captcha');
-        const data = await res.json();
-        if (data.success) {
-            document.querySelectorAll('.captcha-question').forEach(el => {
-                el.textContent = data.text;
-            });
-            const sc = document.getElementById('studentCaptcha');
-            if (sc) sc.value = '';
-            const clc = document.getElementById('cohortLeaderCaptcha');
-            if (clc) clc.value = '';
-            const ac = document.getElementById('adminCaptcha');
-            if (ac) ac.value = '';
-        }
-    } catch (e) {
-        console.error('Failed to load CAPTCHA', e);
-    }
-}
+// Removed custom loadCaptcha
 
 // ── STUDENT LOGIN ────────────────────────────────────────
 function autoFillStudentLoginPrefix() {
@@ -75,13 +57,8 @@ async function handleStudentLogin() {
     const admissionNumber = document.getElementById('loginAdmission').value.trim();
     const course = document.getElementById('loginCourse') ? document.getElementById('loginCourse').value.trim() : '';
     const password = document.getElementById('loginPassword').value.trim();
-    const captcha = document.getElementById('studentCaptcha').value.trim();
     const errDiv = document.getElementById('studentLoginError');
 
-    if (!captcha) {
-        errDiv.textContent = 'Please solve the Security Check.';
-        return;
-    }
 
     errDiv.textContent = '';
 
@@ -106,10 +83,11 @@ async function handleStudentLogin() {
     }
 
     try {
+        const recaptchaToken = await grecaptcha.execute('6Leg9i4tAAAAABGUYzbLq1nDysawl-y0vSFnWU9F', {action: 'student_login'});
         const res = await fetch('/api/auth/login/student', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, admissionNumber, course, password, captcha })
+            body: JSON.stringify({ name, admissionNumber, course, password, captcha: recaptchaToken })
         });
         const data = await res.json();
 
@@ -117,11 +95,9 @@ async function handleStudentLogin() {
             window.location.href = '/pages/student-dashboard.html';
         } else {
             errDiv.textContent = data.message || 'Login failed.';
-            loadCaptcha();
         }
     } catch (err) {
         errDiv.textContent = 'Server error. Please try again.';
-        loadCaptcha();
     }
 }
 
@@ -130,13 +106,7 @@ async function handleStudentLogin() {
 async function handleCohortLeaderLogin() {
     const cohortLeaderId = document.getElementById('cohortLeaderId').value.trim();
     const password = document.getElementById('cohortLeaderPassword').value.trim();
-    const captcha = document.getElementById('cohortLeaderCaptcha').value.trim();
     const errDiv = document.getElementById('cohortLeaderLoginError');
-
-    if (!captcha) {
-        errDiv.textContent = 'Please solve the Security Check.';
-        return;
-    }
 
     errDiv.textContent = '';
 
@@ -146,10 +116,11 @@ async function handleCohortLeaderLogin() {
     }
 
     try {
+        const recaptchaToken = await grecaptcha.execute('6Leg9i4tAAAAABGUYzbLq1nDysawl-y0vSFnWU9F', {action: 'cohort_leader_login'});
         const res = await fetch('/api/auth/login/cohort_leader', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cohortLeaderId, password, captcha })
+            body: JSON.stringify({ cohortLeaderId, password, captcha: recaptchaToken })
         });
         const data = await res.json();
 
@@ -157,11 +128,9 @@ async function handleCohortLeaderLogin() {
             window.location.href = '/pages/cohort-dashboard.html';
         } else {
             errDiv.textContent = data.message || 'Login failed.';
-            loadCaptcha();
         }
     } catch (err) {
         errDiv.textContent = 'Server error. Please try again.';
-        loadCaptcha();
     }
 }
 
@@ -169,13 +138,7 @@ async function handleCohortLeaderLogin() {
 async function handleAdminLogin() {
     const adminId = document.getElementById('adminId').value.trim();
     const password = document.getElementById('adminPassword').value.trim();
-    const captcha = document.getElementById('adminCaptcha').value.trim();
     const errDiv = document.getElementById('adminLoginError');
-
-    if (!captcha) {
-        errDiv.textContent = 'Please solve the Security Check.';
-        return;
-    }
 
     errDiv.textContent = '';
 
@@ -185,10 +148,11 @@ async function handleAdminLogin() {
     }
 
     try {
+        const recaptchaToken = await grecaptcha.execute('6Leg9i4tAAAAABGUYzbLq1nDysawl-y0vSFnWU9F', {action: 'admin_login'});
         const res = await fetch('/api/auth/login/admin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ adminId, password, captcha })
+            body: JSON.stringify({ adminId, password, captcha: recaptchaToken })
         });
         const data = await res.json();
 
@@ -196,17 +160,14 @@ async function handleAdminLogin() {
             window.location.href = '/pages/admin-dashboard.html';
         } else {
             errDiv.textContent = data.message || 'Login failed.';
-            loadCaptcha();
         }
     } catch (err) {
         errDiv.textContent = 'Server error. Please try again.';
-        loadCaptcha();
     }
 }
 
 // ── CHECK SESSION ON LOAD ─────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
-    loadCaptcha();
     try {
         const res = await fetch('/api/auth/me');
         const data = await res.json();

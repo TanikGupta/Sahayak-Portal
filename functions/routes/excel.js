@@ -15,15 +15,49 @@ function isAdmin(req, res, next) {
     next();
 }
 
-// Store excel files temporarily in OS temp directory (works in Cloud Functions)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, os.tmpdir()),
-    filename: (req, file, cb) => cb(null, 'excel-' + Date.now() + path.extname(file.originalname))
-});
-const upload = multer({ storage });
+const Busboy = require('busboy');
+
+// Custom middleware to handle file upload with Busboy for Firebase Cloud Functions
+const uploadSingleExcel = (req, res, next) => {
+    if (req.method !== 'POST') return next();
+    
+    const busboy = Busboy({ headers: req.headers });
+    let fileUploaded = false;
+    let filePromises = [];
+    
+    busboy.on('file', (fieldname, file, info) => {
+        if (fieldname === 'excelFile') {
+            const { filename } = info;
+            const filePath = path.join(os.tmpdir(), 'excel-' + Date.now() + path.extname(filename));
+            const writeStream = fs.createWriteStream(filePath);
+            file.pipe(writeStream);
+            req.file = { path: filePath, originalname: filename };
+            fileUploaded = true;
+            
+            // To ensure the file is fully written before we move on
+            const promise = new Promise((resolve) => {
+                writeStream.on('close', resolve);
+            });
+            filePromises.push(promise);
+        } else {
+            file.resume();
+        }
+    });
+
+    busboy.on('finish', async () => {
+        await Promise.all(filePromises);
+        next();
+    });
+    
+    if (req.rawBody) {
+        busboy.end(req.rawBody);
+    } else {
+        req.pipe(busboy);
+    }
+};
 
 // UPLOAD AND PROCESS EXCEL
-router.post('/upload', isAdmin, upload.single('excelFile'), async (req, res) => {
+router.post('/upload', isAdmin, uploadSingleExcel, async (req, res) => {
     if (!req.file) {
         return res.json({ success: false, message: 'No file uploaded.' });
     }
@@ -158,7 +192,7 @@ router.post('/upload', isAdmin, upload.single('excelFile'), async (req, res) => 
 });
 
 // GET PREVIEW OF EXCEL BEFORE IMPORTING
-router.post('/preview', isAdmin, upload.single('excelFile'), (req, res) => {
+router.post('/preview', isAdmin, uploadSingleExcel, (req, res) => {
     if (!req.file) return res.json({ success: false, message: 'No file uploaded.' });
 
     try {
@@ -249,7 +283,7 @@ router.get('/template', isAdmin, (req, res) => {
 });
 
 // UPLOAD COHORT LEADER ASSIGNMENT EXCEL
-router.post('/assign-cohort-leaders', isAdmin, upload.single('excelFile'), async (req, res) => {
+router.post('/assign-cohort-leaders', isAdmin, uploadSingleExcel, async (req, res) => {
     if (!req.file) {
         return res.json({ success: false, message: 'No file uploaded.' });
     }

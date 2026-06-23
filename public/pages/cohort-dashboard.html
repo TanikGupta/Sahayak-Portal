@@ -202,10 +202,12 @@ function renderStudents() {
             <td>${statusBadge}</td>
             <td><span class="badge ${s.printouts_taken === 1 ? 'badge-approved' : 'badge-pending'}">${s.printouts_taken === 1 ? 'Done' : 'Pending'}</span></td>
             <td>
-                <button class="btn-primary" style="width:auto;padding:6px 14px;font-size:12px;margin-right:6px;"
-                    onclick="viewStudent(${s.id})">👁️ View</button>
-                <button class="btn-secondary" style="width:auto;padding:6px 14px;font-size:12px;background:#0f2c59;color:white;border:none;"
-                    onclick="openStudentChat(${s.id})">💬 Chat</button>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="btn-primary" style="width:auto; padding:6px 14px; font-size:12px;" 
+                        onclick="viewStudent('${s.id}')">👁️ View</button>
+                    <button class="btn-secondary" style="width:auto; padding:6px 14px; font-size:12px;"
+                        onclick="openStudentChat('${s.id}')">💬 Chat</button>
+                </div>
             </td>
         </tr>`;
     });
@@ -245,8 +247,8 @@ async function viewStudent(studentId) {
                     </p>
                     ${s.withdrawal_status === 'pending' ? `
                         <div style="display:flex; gap:12px; margin-top: 10px;">
-                            <button class="btn-danger" style="width:auto; padding:6px 14px; font-size:12px;" onclick="approveWithdrawal(${s.id}, 'approved')">Approve Withdrawal</button>
-                            <button class="btn-secondary" style="width:auto; padding:6px 14px; font-size:12px;" onclick="approveWithdrawal(${s.id}, 'rejected')">Reject Withdrawal</button>
+                            <button class="btn-danger" style="width:auto; padding:6px 14px; font-size:12px;" onclick="approveWithdrawal('${s.id}', 'approved')">Approve Withdrawal</button>
+                            <button class="btn-secondary" style="width:auto; padding:6px 14px; font-size:12px;" onclick="approveWithdrawal('${s.id}', 'rejected')">Reject Withdrawal</button>
                         </div>
                         <div id="withdrawalActionMsg" class="success-msg" style="margin-top:8px;"></div>
                     ` : ''}
@@ -408,7 +410,7 @@ function showSection(name, el) {
 }
 
 async function handleLogout() {
-    await fetch('/api/auth/logout');
+    await fetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/';
 }
 
@@ -445,7 +447,7 @@ async function loadCohortMessages(studentId) {
     if (!chatBox) return;
 
     try {
-        const res = await fetch('/api/cohort/messages/' + studentId);
+        const res = await fetch('/api/cohort/messages/' + studentId + '?t=' + new Date().getTime());
         const data = await res.json();
 
         if (data.success && data.messages) {

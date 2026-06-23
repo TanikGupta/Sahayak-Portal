@@ -199,7 +199,8 @@ router.get('/messages/:studentId', isCohortLeader, async (req, res) => {
 
         res.json({ success: true, messages });
     } catch (err) {
-        res.json({ success: false, message: 'Database error.' });
+        console.error('Error fetching cohort messages:', err);
+        res.json({ success: false, message: 'Database error: ' + err.message });
     }
 });
 

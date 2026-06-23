@@ -550,8 +550,8 @@ function renderStudents() {
             <td><span class="badge ${s.printouts_taken === 1 ? 'badge-approved' : 'badge-pending'}">${s.printouts_taken === 1 ? 'Done' : 'Pending'}</span></td>
             <td>
                 <div style="display:flex; gap:6px;">
-                    <button onclick="editStudentPrompt(${s.id}, '${s.name.replace(/'/g, "\\'")}', '${s.admission_number}', '${s.course}')" style="padding:4px 8px; font-size:11px; background:#f39c12; color:white; border:none; border-radius:4px; cursor:pointer;">✏️ Edit</button>
-                    <button onclick="deleteStudent(${s.id})" style="padding:4px 8px; font-size:11px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;">🗑️ Del</button>
+                    <button onclick="editStudentPrompt('${s.id}', '${s.name.replace(/'/g, "\\'")}', '${s.admission_number}', '${s.course}')" style="padding:4px 8px; font-size:11px; background:#f39c12; color:white; border:none; border-radius:4px; cursor:pointer;">✏️ Edit</button>
+                    <button onclick="deleteStudent('${s.id}')" style="padding:4px 8px; font-size:11px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;">🗑️ Del</button>
                 </div>
             </td>
         </tr>`;
@@ -761,7 +761,7 @@ function renderCohortLeaders() {
                             <td>
                                 <span class="password-text" id="pass-${m.id}" style="font-family: monospace; display: none; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${m.password || 'N/A'}</span>
                                 <span class="password-placeholder" id="placeholder-${m.id}" style="color:#aaa; font-family: monospace; letter-spacing: 2px;">••••••••</span>
-                                <button onclick="toggleCohortPassword(${m.id})" style="background:none; border:none; color:#0f2c59; cursor:pointer; font-size:11px; margin-left:6px; font-weight:700; padding:0;">👁️ Show</button>
+                                <button onclick="toggleCohortPassword('${m.id}')" style="background:none; border:none; color:#0f2c59; cursor:pointer; font-size:11px; margin-left:6px; font-weight:700; padding:0;">👁️ Show</button>
                             </td>
                             <td><span class="badge badge-review">${cohortStudents.length} students</span></td>
                             <td><span class="badge badge-verified">${lockedCount}</span></td>
@@ -769,8 +769,8 @@ function renderCohortLeaders() {
                             <td><span class="badge badge-danger">${requestCount}</span></td>
                             <td>
                                 <div style="display:flex; gap:6px;">
-                                    <button class="btn-primary" style="width:auto;padding:6px 10px;font-size:11px;" onclick="viewCohortDetails(${m.id}, '${m.name.replace(/'/g, "\\'")}')">👁️ View</button>
-                                    <button onclick="deleteCohortLeader(${m.id})" style="padding:6px 10px; font-size:11px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;">🗑️ Del</button>
+                                    <button class="btn-primary" style="width:auto;padding:6px 10px;font-size:11px;" onclick="viewCohortDetails('${m.id}', '${m.name.replace(/'/g, "\\'")}')">👁️ View</button>
+                                    <button onclick="deleteCohortLeader('${m.id}')" style="padding:6px 10px; font-size:11px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;">🗑️ Del</button>
                                 </div>
                             </td>
                         </tr>
@@ -1048,8 +1048,8 @@ function renderVerifyList() {
                         <td>${s.course}</td>
                         <td><span class="badge badge-pending">${s.verification_status || 'Pending'}</span></td>
                         <td style="display:flex; gap:8px;">
-                            <button class="btn-primary" style="width:auto;padding:6px 14px;font-size:12px;" onclick="verifyStudent(${s.id}, 'verified')">✅ Verify</button>
-                            <button class="btn-danger" style="padding:6px 14px;font-size:12px;" onclick="verifyStudent(${s.id}, 'rejected')">❌ Reject</button>
+                            <button class="btn-primary" style="width:auto;padding:6px 14px;font-size:12px;" onclick="verifyStudent('${s.id}', 'verified')">✅ Verify</button>
+                            <button class="btn-danger" style="padding:6px 14px;font-size:12px;" onclick="verifyStudent('${s.id}', 'rejected')">❌ Reject</button>
                         </td>
                     </tr>`).join('')}
             </tbody>
@@ -1099,7 +1099,7 @@ function renderApprovalsList() {
                         <td><span class="badge badge-verified">✅ Submitted</span></td>
                         <td>
                             <button class="btn-primary" style="width:auto;padding:6px 14px;font-size:12px;"
-                                onclick="finalApprove(${s.id})">🎓 Final Approve</button>
+                                onclick="finalApprove('${s.id}')">🎓 Final Approve</button>
                         </td>
                     </tr>`).join('')}
             </tbody>
@@ -1254,7 +1254,7 @@ function showSection(name, el) {
 }
 
 async function handleLogout() {
-    await fetch('/api/auth/logout');
+    await fetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/';
 }
 

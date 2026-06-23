@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database');
-const multer = require('multer');
 const path = require('path');
+const os = require('os');
+const fs = require('fs');
+const Busboy = require('busboy');
 
 // Middleware to check login
 function isLoggedIn(req, res, next) {
@@ -12,15 +14,49 @@ function isLoggedIn(req, res, next) {
     next();
 }
 
-// File upload setup (Note: In Firebase, you'd usually use Firebase Storage. We're keeping local disk for now, but Cloud Functions are read-only except for /tmp)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, '/tmp'),
-    filename: (req, file, cb) => {
+// Custom middleware to handle multiple file uploads with Busboy for Firebase Cloud Functions
+const uploadMultipleDocuments = (req, res, next) => {
+    if (req.method !== 'POST') return next();
+    
+    const busboy = Busboy({ headers: req.headers });
+    req.files = {};
+    let promises = [];
+    
+    busboy.on('file', (fieldname, file, info) => {
+        const { filename } = info;
         const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, unique + path.extname(file.originalname));
+        const savedFilename = unique + path.extname(filename);
+        const filePath = path.join(os.tmpdir(), savedFilename);
+        
+        const writeStream = fs.createWriteStream(filePath);
+        file.pipe(writeStream);
+        
+        if (!req.files[fieldname]) {
+            req.files[fieldname] = [];
+        }
+        req.files[fieldname].push({ 
+            originalname: filename, 
+            filename: savedFilename,
+            path: filePath
+        });
+        
+        const promise = new Promise((resolve) => {
+            writeStream.on('close', resolve);
+        });
+        promises.push(promise);
+    });
+
+    busboy.on('finish', async () => {
+        await Promise.all(promises);
+        next();
+    });
+    
+    if (req.rawBody) {
+        busboy.end(req.rawBody);
+    } else {
+        req.pipe(busboy);
     }
-});
-const upload = multer({ storage });
+};
 
 // SAVE REGISTRATION DETAILS
 router.post('/registration', isLoggedIn, async (req, res) => {
@@ -115,13 +151,7 @@ router.post('/undertakings', isLoggedIn, async (req, res) => {
 });
 
 // UPLOAD DOCUMENTS
-router.post('/documents', isLoggedIn, upload.fields([
-    { name: 'marksheet10' },
-    { name: 'marksheet12' },
-    { name: 'idProof' },
-    { name: 'photo' },
-    { name: 'migration' }
-]), async (req, res) => {
+router.post('/documents', isLoggedIn, uploadMultipleDocuments, async (req, res) => {
     const userId = req.session.user.id;
     const files = req.files;
 
@@ -269,7 +299,8 @@ router.get('/messages', isLoggedIn, async (req, res) => {
         
         res.json({ success: true, messages });
     } catch (err) {
-        res.json({ success: false, message: 'Database error.' });
+        console.error('Error fetching student messages:', err);
+        res.json({ success: false, message: 'Database error: ' + err.message });
     }
 });
 

@@ -88,7 +88,7 @@
             <li><a href="#" id="navSecurity" onclick="showSection('security', this)"><span class="icon">🔒</span> Account Security</a></li>
             <li><a href="#" id="navStatus" onclick="showSection('status', this)"><span class="icon">🔍</span> Application Status <span id="statusLock" style="font-size:11px;opacity:0.7;">🔒</span></a></li>
             <li><a href="#" id="navMessages" onclick="showSection('messages', this)"><span class="icon">💬</span> Message Portal</a></li>
-            <li><a href="#" id="navWithdrawal" onclick="showSection('withdrawal', this)"><span class="icon">↩️</span> Withdrawal <span id="withdrawalLock" style="font-size:11px;opacity:0.7;">🔒</span></a></li>
+            <li><a href="#" id="navWithdrawal" onclick="showSection('withdrawal', this)"><span class="icon">↩️</span> Withdrawal</a></li>
         </ul>
         <div class="sidebar-bottom" style="border-top: none;">
             <div style="font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); font-family: 'Segoe UI', system-ui, sans-serif; word-break: break-word;">
@@ -203,24 +203,24 @@
 
                     <div class="section-divider">Personal Information</div>
                     <div class="field-row-3">
-                        <div class="form-group"><label>First Name</label><input type="text" id="firstName" placeholder="First name" /></div>
-                        <div class="form-group"><label>Middle Name</label><input type="text" id="middleName" placeholder="Middle name" /></div>
-                        <div class="form-group"><label>Last Name</label><input type="text" id="lastName" placeholder="Last name" /></div>
+                        <div class="form-group"><label>First Name <span style="color: #c0392b;">*</span></label><input type="text" id="firstName" placeholder="First name" /></div>
+                        <div class="form-group"><label>Middle Name <span style="color: #c0392b;">*</span></label><input type="text" id="middleName" placeholder="Middle name" /></div>
+                        <div class="form-group"><label>Last Name <span style="color: #c0392b;">*</span></label><input type="text" id="lastName" placeholder="Last name" /></div>
                     </div>
                     <div class="field-row">
-                        <div class="form-group"><label>Date of Birth</label><input type="date" id="dob" /></div>
-                        <div class="form-group"><label>Blood Group</label>
+                        <div class="form-group"><label>Date of Birth <span style="color: #c0392b;">*</span></label><input type="date" id="dob" /></div>
+                        <div class="form-group"><label>Blood Group <span style="color: #c0392b;">*</span></label>
                             <select id="bloodGroup"><option value="">-- Select --</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
                         </div>
-                        <div class="form-group"><label>Gender</label>
+                        <div class="form-group"><label>Gender <span style="color: #c0392b;">*</span></label>
                             <select id="gender"><option value="">-- Select --</option><option>Male</option><option>Female</option><option>Other</option></select>
                         </div>
                     </div>
                     <div class="field-row">
-                        <div class="form-group"><label>Category</label>
+                        <div class="form-group"><label>Category <span style="color: #c0392b;">*</span></label>
                             <select id="category"><option value="">-- Select --</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select>
                         </div>
-                        <div class="form-group"><label>Phone Number</label>
+                        <div class="form-group"><label>Phone Number <span style="color: #c0392b;">*</span></label>
                             <div class="phone-input-group">
                                 <span class="phone-prefix-addon">+91</span>
                                 <input type="text" id="phone" placeholder="Mobile number" maxlength="10" />
@@ -228,14 +228,14 @@
                         </div>
                     </div>
                     <div class="field-row">
-                        <div class="form-group"><label>Email</label><input type="email" id="email" placeholder="Email address" /></div>
-                        <div class="form-group"><label>APAAR/ABC ID <a href="https://www.abc.gov.in/" target="_blank" style="color:#2E5FA3; font-weight:normal; font-size:12px; margin-left:8px; text-decoration:underline;">(Create at abc.gov.in)</a></label><input type="text" id="apaarId" placeholder="xxxx-xxxx-xxxx-xxxx" /></div>
+                        <div class="form-group"><label>Email <span style="color: #c0392b;">*</span></label><input type="email" id="email" placeholder="Email address" /></div>
+                        <div class="form-group"><label>APAAR/ABC ID <span style="color: #c0392b;">*</span> <a href="https://www.abc.gov.in/" target="_blank" style="color:#2E5FA3; font-weight:normal; font-size:12px; margin-left:8px; text-decoration:underline;">(Create at abc.gov.in)</a></label><input type="text" id="apaarId" placeholder="xxxx-xxxx-xxxx-xxxx" /></div>
                     </div>
 
                     <div class="section-divider">Family Details</div>
                     <div class="field-row">
-                        <div class="form-group"><label>Father's Name</label><input type="text" id="fatherName" placeholder="Father's full name" /></div>
-                        <div class="form-group"><label>Mother's Name</label><input type="text" id="motherName" placeholder="Mother's full name" /></div>
+                        <div class="form-group"><label>Father's Name <span style="color: #c0392b;">*</span></label><input type="text" id="fatherName" placeholder="Father's full name" /></div>
+                        <div class="form-group"><label>Mother's Name <span style="color: #c0392b;">*</span></label><input type="text" id="motherName" placeholder="Mother's full name" /></div>
                     </div>
                     <div class="field-row-3">
                         <div class="form-group"><label>Father's Occupation</label><input type="text" id="fatherOccupation" placeholder="Occupation" /></div>
@@ -248,14 +248,15 @@
                         <div class="form-group"><label>Mother's Company</label><input type="text" id="motherCompany" placeholder="Company/Organization" /></div>
                     </div>
                     <div class="field-row-3">
-                        <div class="form-group"><label>Father's Phone <span style="font-size: 12px; font-weight: normal; color: #64748b;">(Must be different from student's number)</span></label>
+                        <div class="form-group">
+                            <label>Father's Phone <span style="color: #c0392b;">*</span> <span style="font-size: 11px; color: #666; font-weight: normal;">(Must be different from student)</span></label>
                             <div class="phone-input-group">
                                 <span class="phone-prefix-addon">+91</span>
                                 <input type="text" id="fatherPhone" placeholder="Father's mobile" maxlength="10" />
                             </div>
                         </div>
                         <div class="form-group"><label>Father's Landline With Code</label><input type="text" id="fatherLandline" placeholder="Landline with code" /></div>
-                        <div class="form-group"><label>Father's Email</label><input type="email" id="fatherEmail" placeholder="Father's email" /></div>
+                        <div class="form-group"><label>Father's Email <span style="color: #c0392b;">*</span> <span style="font-size: 11px; color: #666; font-weight: normal;">(Must be different from student's email)</span></label><input type="email" id="fatherEmail" placeholder="Father's email" /></div>
                     </div>
                     <div class="field-row">
                         <div class="form-group"><label>Mother's Phone</label>
@@ -268,11 +269,11 @@
                     </div>
 
                     <div class="section-divider">Address</div>
-                    <div class="form-group"><label>Permanent Address</label><textarea id="permanentAddress" rows="2" placeholder="Full permanent address"></textarea></div>
+                    <div class="form-group"><label>Permanent Address <span style="color: #c0392b;">*</span></label><textarea id="permanentAddress" rows="2" placeholder="Full permanent address"></textarea></div>
                     <div class="field-row">
-                        <div class="form-group"><label>City</label><input type="text" id="permanentCity" placeholder="City" /></div>
-                        <div class="form-group"><label>District</label><input type="text" id="permanentDistrict" placeholder="District" /></div>
-                        <div class="form-group"><label>State</label><input type="text" id="permanentState" placeholder="State" /></div>
+                        <div class="form-group"><label>City <span style="color: #c0392b;">*</span></label><input type="text" id="permanentCity" placeholder="City" /></div>
+                        <div class="form-group"><label>District <span style="color: #c0392b;">*</span></label><input type="text" id="permanentDistrict" placeholder="District" /></div>
+                        <div class="form-group"><label>State <span style="color: #c0392b;">*</span></label><input type="text" id="permanentState" placeholder="State" /></div>
                     </div>
                     
                     <div class="form-group" style="margin-top:15px;"><label>Local/Guardian Address (Mandatory for Hostelers)</label><textarea id="localAddress" rows="2" placeholder="Local guardian address"></textarea></div>
@@ -284,17 +285,17 @@
 
                     <div class="section-divider">Emergency Contact</div>
                     <div class="field-row">
-                        <div class="form-group"><label>Emergency Contact Name</label><input type="text" id="emergencyName" placeholder="Full name" /></div>
-                        <div class="form-group"><label>Relationship</label><input type="text" id="emergencyRelation" placeholder="e.g. Father, Mother" /></div>
+                        <div class="form-group"><label>Emergency Contact Name <span style="color: #c0392b;">*</span></label><input type="text" id="emergencyName" placeholder="Full name" /></div>
+                        <div class="form-group"><label>Relationship <span style="color: #c0392b;">*</span></label><input type="text" id="emergencyRelation" placeholder="e.g. Father, Mother" /></div>
                     </div>
                     <div class="field-row">
-                        <div class="form-group"><label>Emergency Phone</label>
+                        <div class="form-group"><label>Emergency Phone <span style="color: #c0392b;">*</span></label>
                             <div class="phone-input-group">
                                 <span class="phone-prefix-addon">+91</span>
                                 <input type="text" id="emergencyPhone" placeholder="Phone number" maxlength="10" />
                             </div>
                         </div>
-                        <div class="form-group"><label>Emergency Mobile</label>
+                        <div class="form-group"><label>Emergency Mobile <span style="color: #c0392b;">*</span></label>
                             <div class="phone-input-group">
                                 <span class="phone-prefix-addon">+91</span>
                                 <input type="text" id="emergencyMobile" placeholder="Mobile number" maxlength="10" />
@@ -330,11 +331,11 @@
                     <div id="hostelDetailsSection" style="display:none; margin-top: 15px; border-left: 3px solid #2e5fa3; padding-left: 15px; margin-bottom: 20px;">
                         <div class="field-row">
                             <div class="form-group">
-                                <label>Age</label>
+                                <label>Age <span style="color: #c0392b;">*</span></label>
                                 <input type="number" id="hostelAge" placeholder="Age" min="15" max="100" />
                             </div>
                             <div class="form-group">
-                                <label>Marital Status</label>
+                                <label>Marital Status <span style="color: #c0392b;">*</span></label>
                                 <select id="hostelMaritalStatus">
                                     <option value="">--Select--</option>
                                     <option value="Single">Single</option>
@@ -344,14 +345,14 @@
                         </div>
                         <div class="field-row">
                             <div class="form-group">
-                                <label>Have you stayed in hostel before?</label>
+                                <label>Have you stayed in hostel before? <span style="color: #c0392b;">*</span></label>
                                 <select id="hostelStayedBefore">
                                     <option value="no">No</option>
                                     <option value="yes">Yes</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Any chronic medical history?</label>
+                                <label>Any chronic medical history? <span style="color: #c0392b;">*</span></label>
                                 <select id="hostelMedicalHistory" onchange="toggleHostelMedicalDetails()">
                                     <option value="no">No</option>
                                     <option value="yes">Yes</option>
@@ -366,32 +367,33 @@
                         <div class="section-divider" style="margin-top:15px; font-size: 13px; color: #4b5563;">Local Guardian Details</div>
                         <div class="field-row">
                             <div class="form-group">
-                                <label>Local Guardian Name</label>
+                                <label>Local Guardian Name <span style="color: #c0392b;">*</span></label>
                                 <input type="text" id="hostelGuardianName" placeholder="Guardian's Name" />
                             </div>
                             <div class="form-group">
-                                <label>Relationship with Guardian</label>
+                                <label>Relationship with Guardian <span style="color: #c0392b;">*</span></label>
                                 <input type="text" id="hostelGuardianRelation" placeholder="e.g. Uncle, Aunt, Local Guardian" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Local Guardian Address</label>
+                            <label>Local Guardian Address <span style="color: #c0392b;">*</span></label>
                             <textarea id="hostelGuardianAddress" rows="2" placeholder="Full address of local guardian"></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Local Guardian Mobile</label>
+                            <label>Local Guardian Mobile <span style="color: #c0392b;">*</span></label>
                             <div class="phone-input-group">
                                 <span class="phone-prefix-addon">+91</span>
                                 <input type="text" id="hostelGuardianPhone" placeholder="Mobile number" maxlength="10" />
                             </div>
                         </div>
+                        <div class="form-group"><label>Local Guardian Email <span style="color: #c0392b;">*</span></label><input type="email" id="hostelGuardianEmail" placeholder="Guardian email" /></div>
                     </div>
 
 
 
                     <div class="section-divider" style="margin-top:20px;">Transport Facility</div>
                     <div class="form-group">
-                        <label>Do you want to avail University transport facility? <span style="color:red">*</span></label>
+                        <label>Do you want to avail University transport facility? <span style="color: #c0392b;">*</span></label>
                         <select id="availTransport" class="form-control" onchange="toggleTransportDetails()">
                             <option value="no">No</option>
                             <option value="yes">Yes</option>
@@ -407,17 +409,17 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>PIN Code <span style="color:red">*</span></label>
+                                <label>PIN Code <span style="color: #c0392b;">*</span></label>
                                 <input type="text" id="transportPincode" class="form-control" maxlength="6">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Current Residential Address <span style="color:red">*</span></label>
+                            <label>Current Residential Address <span style="color: #c0392b;">*</span></label>
                             <textarea id="transportAddress" class="form-control" rows="2" placeholder="House no, Street..."></textarea>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Area / Locality <span style="color:red">*</span></label>
+                                <label>Area / Locality <span style="color: #c0392b;">*</span></label>
                                 <input type="text" id="transportArea" class="form-control">
                             </div>
                             <div class="form-group">
@@ -430,7 +432,7 @@
                             <input type="text" id="transportGmapsLink" class="form-control" placeholder="https://maps.google.com/...">
                         </div>
                         <div class="form-group">
-                            <label>Preferred Pickup Point <span style="color:red">*</span></label>
+                            <label>Preferred Pickup Point <span style="color: #c0392b;">*</span></label>
                             <select id="transportPickupPoint" class="form-control">
                                 <option value="">Select Route</option>
                                 <option value="ROUTE NO 1-TRIVENI PULIYA">ROUTE NO 1-TRIVENI PULIYA (Arjun Nagar Phatak, Trivani Puliya, Ridhi-Sidhi, V.T. Road Madhyam Marg, New Patrkar, Narayan Vihar, JKLU)</option>
@@ -1525,12 +1527,36 @@ function handleLockProfile() {
     }
 
     const requiredFields = [
-        'phone', 'email'
+        'firstName', 'middleName', 'lastName', 'dob', 'gender', 'category', 'apaarId',
+        'phone', 'email', 'fatherEmail',
+        'bloodGroup', 'fatherName', 'motherName', 'fatherPhone',
+        'permanentAddress', 'permanentCity', 'permanentDistrict', 'permanentState',
+        'emergencyName', 'emergencyRelation', 'emergencyPhone', 'emergencyMobile'
     ];
     
     const fieldLabels = {
+        firstName: "First Name",
+        middleName: "Middle Name",
+        lastName: "Last Name",
+        dob: "Date of Birth",
+        gender: "Gender",
+        category: "Category",
+        apaarId: "APAAR/ABC ID",
         phone: "Phone Number",
         email: "Email Address",
+        fatherEmail: "Father's Email Address",
+        bloodGroup: "Blood Group",
+        fatherName: "Father's Name",
+        motherName: "Mother's Name",
+        fatherPhone: "Father's Phone",
+        permanentAddress: "Permanent Address",
+        permanentCity: "City",
+        permanentDistrict: "District",
+        permanentState: "State",
+        emergencyName: "Emergency Contact Name",
+        emergencyRelation: "Emergency Relationship",
+        emergencyPhone: "Emergency Phone",
+        emergencyMobile: "Emergency Mobile",
         hostelAge: "Hostel Age",
         hostelMaritalStatus: "Hostel Marital Status",
         hostelStayedBefore: "Hostel Stayed Before",
@@ -2959,7 +2985,7 @@ function isProfileSubmitted() {
 
 function updateSidebarLocks() {
     const submitted = isProfileSubmitted();
-    ['formsLock','statusLock','withdrawalLock'].forEach(id => {
+    ['formsLock','statusLock'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = submitted ? 'none' : 'inline';
     });
@@ -2967,7 +2993,7 @@ function updateSidebarLocks() {
 
 function showSection(name, el) {
     // Gate: block access to forms/status/withdrawal until profile is submitted
-    if (['forms','status','withdrawal'].includes(name) && !isProfileSubmitted()) {
+    if (['forms','status'].includes(name) && !isProfileSubmitted()) {
         // Redirect to profile with a clear message
         ['dashboard','profile','forms','guidelines','status','withdrawal','messages'].forEach(s => {
             const sec = document.getElementById('section-'+s);
@@ -2983,7 +3009,7 @@ function showSection(name, el) {
         const msgDiv = document.getElementById('profileMsg');
         if (msgDiv) {
             msgDiv.style.color = '#c0392b';
-            msgDiv.textContent = '⚠️ Please complete and submit your profile first before accessing ' + (name === 'forms' ? 'Registration Forms' : name === 'status' ? 'Application Status' : 'Withdrawal') + '.';
+            msgDiv.textContent = '⚠️ Please complete and submit your profile first before accessing ' + (name === 'forms' ? 'Registration Forms' : 'Application Status') + '.';
             setTimeout(() => msgDiv.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
         }
         return;
@@ -3006,7 +3032,7 @@ function showSection(name, el) {
 }
 
 async function handleLogout() {
-    await fetch('/api/auth/logout');
+    await fetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/';
 }
 
@@ -3015,7 +3041,7 @@ async function loadMessages() {
     if (!chatBox) return;
 
     try {
-        const res = await fetch('/api/student/messages');
+        const res = await fetch('/api/student/messages?t=' + new Date().getTime());
         const data = await res.json();
 
         if (data.success && data.messages) {

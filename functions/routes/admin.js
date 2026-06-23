@@ -14,6 +14,21 @@ router.get('/me', isAdmin, (req, res) => {
     res.json({ success: true, user: req.session.user });
 });
 
+// TEMPORARY SETUP: Create initial admin
+router.get('/setup-first-admin', async (req, res) => {
+    try {
+        await db.collection('users').doc('admin_init').set({
+            admission_number: 'umeshsirexam',
+            password: 'secondflooradmin',
+            role: 'admin',
+            name: 'Umesh Sir'
+        });
+        res.json({ success: true, message: 'Admin user successfully created!' });
+    } catch (err) {
+        res.json({ success: false, message: 'Failed: ' + err.message });
+    }
+});
+
 // Get all students
 router.get('/students', isAdmin, async (req, res) => {
     try {

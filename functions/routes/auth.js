@@ -2,13 +2,20 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database');
 
-// GENERATE CAPTCHA
-router.get('/captcha', (req, res) => {
-    const num1 = Math.floor(Math.random() * 10) + 1;
-    const num2 = Math.floor(Math.random() * 10) + 1;
-    req.session.captchaAnswer = num1 + num2;
-    res.json({ success: true, text: `What is ${num1} + ${num2}?` });
-});
+// HELPER: Verify Google reCAPTCHA v3 token
+async function verifyRecaptcha(token) {
+    if (!token) return false;
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`;
+    try {
+        const response = await fetch(url, { method: 'POST' });
+        const data = await response.json();
+        return data.success && data.score >= 0.5;
+    } catch (e) {
+        console.error('reCAPTCHA verify error:', e);
+        return false;
+    }
+}
 
 // CHECK IF STUDENT HAS PASSWORD
 router.post('/check-student', async (req, res) => {
@@ -35,11 +42,10 @@ router.post('/check-student', async (req, res) => {
 router.post('/login/student', async (req, res) => {
     const { name, admissionNumber, course, password, captcha } = req.body;
 
-    if (!req.session.captchaAnswer || parseInt(captcha) !== req.session.captchaAnswer) {
-        req.session.captchaAnswer = null; // Clear it to prevent replay
-        return res.json({ success: false, message: 'Incorrect CAPTCHA answer.' });
+    const isValidCaptcha = await verifyRecaptcha(captcha);
+    if (!isValidCaptcha) {
+        return res.json({ success: false, message: 'Security check failed. You appear to be a bot.' });
     }
-    req.session.captchaAnswer = null; // Clear on success as well
 
     if (!admissionNumber) {
         return res.json({ success: false, message: 'Please provide an Application Number.' });
@@ -91,11 +97,10 @@ router.post('/login/student', async (req, res) => {
 router.post('/login/cohort_leader', async (req, res) => {
     const { cohortLeaderId, password, captcha } = req.body;
 
-    if (!req.session.captchaAnswer || parseInt(captcha) !== req.session.captchaAnswer) {
-        req.session.captchaAnswer = null;
-        return res.json({ success: false, message: 'Incorrect CAPTCHA answer.' });
+    const isValidCaptcha = await verifyRecaptcha(captcha);
+    if (!isValidCaptcha) {
+        return res.json({ success: false, message: 'Security check failed. You appear to be a bot.' });
     }
-    req.session.captchaAnswer = null;
 
     if (!cohortLeaderId || !password) {
         return res.json({ success: false, message: 'Please fill in all fields.' });
@@ -132,11 +137,10 @@ router.post('/login/cohort_leader', async (req, res) => {
 router.post('/login/admin', async (req, res) => {
     const { adminId, password, captcha } = req.body;
 
-    if (!req.session.captchaAnswer || parseInt(captcha) !== req.session.captchaAnswer) {
-        req.session.captchaAnswer = null;
-        return res.json({ success: false, message: 'Incorrect CAPTCHA answer.' });
+    const isValidCaptcha = await verifyRecaptcha(captcha);
+    if (!isValidCaptcha) {
+        return res.json({ success: false, message: 'Security check failed. You appear to be a bot.' });
     }
-    req.session.captchaAnswer = null;
 
     if (!adminId || !password) {
         return res.json({ success: false, message: 'Please fill in all fields.' });
@@ -170,9 +174,12 @@ router.post('/login/admin', async (req, res) => {
 });
 
 // LOGOUT
-router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.json({ success: true });
+router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) console.error('Session destroy error:', err);
+        res.clearCookie('__session');
+        res.json({ success: true });
+    });
 });
 
 // CHECK SESSION
