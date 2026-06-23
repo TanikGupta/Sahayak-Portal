@@ -49,17 +49,9 @@ router.post('/login/student', (req, res) => {
         const user = results[0];
 
         // If user has a password set, require password
-        if (user.password && user.password.trim() !== '') {
+        if (user.password) {
             if (user.password !== password) {
                 return res.json({ success: false, message: 'Invalid password. If you forgot your password, please contact admin.' });
-            }
-        } else {
-            // No password set, fallback to name matching (case-insensitive)
-            if (!name) {
-                return res.json({ success: false, message: 'First time logging in? Please enter your Full Name.' });
-            }
-            if (user.name.toLowerCase().trim() !== name.toLowerCase().trim()) {
-                return res.json({ success: false, message: 'Name does not match our records.' });
             }
         }
         req.session.user = {
