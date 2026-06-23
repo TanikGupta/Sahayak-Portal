@@ -227,9 +227,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="field-row">
+                    <div class="field-row-3">
                         <div class="form-group"><label>Email <span style="color: #c0392b;">*</span></label><input type="email" id="email" placeholder="Email address" /></div>
                         <div class="form-group"><label>APAAR/ABC ID <span style="color: #c0392b;">*</span> <a href="https://www.abc.gov.in/" target="_blank" style="color:#2E5FA3; font-weight:normal; font-size:12px; margin-left:8px; text-decoration:underline;">(Create at abc.gov.in)</a></label><input type="text" id="apaarId" placeholder="xxxx-xxxx-xxxx-xxxx" /></div>
+                        <div class="form-group"><label>Aadhar Card <span style="color: #c0392b;">*</span></label><input type="text" id="aadharCard" placeholder="12-digit Aadhar Number" maxlength="14" /></div>
                     </div>
 
                     <div class="section-divider">Family Details</div>
@@ -1141,6 +1142,7 @@ async function loadProfileData() {
         loadPhoneField('phone', d.phone);
         set('email', d.email);
         set('apaarId', d.apaar_id || d.apaarId);
+        set('aadharCard', d.aadhar_card || d.aadharCard);
         set('fatherName', d.father_name || d.fatherName);
         set('motherName', d.mother_name || d.motherName);
         set('fatherOccupation', d.father_occupation || d.fatherOccupation);
@@ -1353,6 +1355,8 @@ function autoFillForms() {
     set('f009_blood', g('bloodGroup'));
 
     set('f010_aadharName', fullName);
+    set('f010_aadhar', g('aadharCard'));
+    set('f010_apaar', g('apaarId'));
     set('f010_fatherName', g('fatherName'));
     if (g('dob')) set('f010_dob', g('dob'));
     set('f010_gender', g('gender'));
@@ -1367,6 +1371,7 @@ function autoFillForms() {
         'f008_admNo', 'f008_firstName', 'f008_middleName', 'f008_lastName', 'f008_dob', 'f008_blood', 'f008_gender',
         'f008_category', 'f008_phone', 'f008_email', 'f008_apaar', 'f008_father', 'f008_mother',
         'f008_address', 'f008_permCity', 'f008_permDistrict', 'f008_permState',
+        'f010_aadhar', 'f010_apaar',
         'f008_localAddress', 'f008_localCity', 'f008_localDistrict', 'f008_localState',
         'f008_emergName', 'f008_emergRelation', 'f008_emergMobile',
         'f008_fOccupation', 'f008_fDesignation', 'f008_fCompany', 'f008_fPhone', 'f008_fLandline', 'f008_fEmail',
@@ -1526,7 +1531,7 @@ function handleLockProfile() {
     }
 
     const requiredFields = [
-        'firstName', 'middleName', 'lastName', 'dob', 'gender', 'category', 'apaarId',
+        'firstName', 'middleName', 'lastName', 'dob', 'gender', 'category', 'apaarId', 'aadharCard',
         'phone', 'email', 'fatherEmail',
         'bloodGroup', 'fatherName', 'motherName', 'fatherPhone',
         'permanentAddress', 'permanentCity', 'permanentDistrict', 'permanentState',
@@ -1541,6 +1546,7 @@ function handleLockProfile() {
         gender: "Gender",
         category: "Category",
         apaarId: "APAAR/ABC ID",
+        aadharCard: "Aadhar Card Number",
         phone: "Phone Number",
         email: "Email Address",
         fatherEmail: "Father's Email Address",
@@ -1675,7 +1681,7 @@ async function saveProfile(status) {
     const body = {
         firstName: g('firstName'), middleName: g('middleName'), lastName: g('lastName'),
         dob: g('dob'), bloodGroup: g('bloodGroup'), gender: g('gender'), category: g('category'),
-        phone: getPhoneVal('phone'), email: g('email'), apaarId: g('apaarId'),
+        phone: getPhoneVal('phone'), email: g('email'), apaarId: g('apaarId'), aadharCard: g('aadharCard'),
         fatherName: g('fatherName'), motherName: g('motherName'),
         fatherOccupation: g('fatherOccupation'), fatherDesignation: g('fatherDesignation'), fatherCompany: g('fatherCompany'),
         motherOccupation: g('motherOccupation'), motherDesignation: g('motherDesignation'), motherCompany: g('motherCompany'),

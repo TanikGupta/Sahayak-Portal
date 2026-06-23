@@ -27,7 +27,7 @@ router.post('/registration', isLoggedIn, (req, res) => {
     const userId = req.session.user.id;
     const {
         firstName, middleName, lastName, dob, bloodGroup, gender, category,
-        phone, email, apaarId, fatherName, motherName,
+        phone, email, apaarId, aadharCard, fatherName, motherName,
         fatherOccupation, fatherDesignation, fatherCompany, motherOccupation, motherDesignation, motherCompany,
         fatherPhone, fatherLandline, fatherEmail, motherPhone, motherEmail,
         permanentAddress, permanentCity, permanentDistrict, permanentState, 
@@ -56,7 +56,7 @@ router.post('/registration', isLoggedIn, (req, res) => {
         if (results.length > 0) {
             const updateQuery = `UPDATE student_details SET 
                 first_name=?, middle_name=?, last_name=?, date_of_birth=?, blood_group=?,
-                gender=?, category=?, phone=?, email=?, apaar_id=?,
+                gender=?, category=?, phone=?, email=?, apaar_id=?, aadhar_card=?,
                 father_name=?, mother_name=?, father_occupation=?, father_designation=?, father_company=?,
                 mother_occupation=?, mother_designation=?, mother_company=?, father_phone=?, father_landline=?, father_email=?, mother_phone=?, mother_email=?,
                 address=?, permanent_city=?, permanent_district=?, permanent_state=?,
@@ -74,7 +74,7 @@ router.post('/registration', isLoggedIn, (req, res) => {
                 WHERE user_id=?`;
             db.query(updateQuery, [
                 firstName, middleName, lastName, dob || null, bloodGroup,
-                gender, category, phone, email, apaarId,
+                gender, category, phone, email, apaarId, aadharCard,
                 fatherName, motherName, fatherOccupation, fatherDesignation, fatherCompany,
                 motherOccupation, motherDesignation, motherCompany, fatherPhone, fatherLandline, fatherEmail, motherPhone, motherEmail,
                 permanentAddress, permanentCity, permanentDistrict, permanentState,
