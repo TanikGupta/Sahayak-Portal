@@ -89,6 +89,7 @@ router.get('/cohort-leaders', isAdmin, async (req, res) => {
                 name: u.name,
                 admission_number: u.admission_number,
                 password: u.password,
+                cohort_code: u.cohort_code || '',
                 student_count: studentCounts[doc.id] || 0
             };
         });
@@ -165,10 +166,10 @@ router.get('/stats', isAdmin, async (req, res) => {
 
 // Add a new Cohort Leader
 router.post('/cohort-leader', isAdmin, async (req, res) => {
-    const { name, cohortLeaderId, password } = req.body;
+    const { name, cohortLeaderId, password, cohortCode } = req.body;
 
     if (!name || !cohortLeaderId || !password) {
-        return res.json({ success: false, message: 'Please fill in all fields.' });
+        return res.json({ success: false, message: 'Please fill in all required fields (Name, ID, Password).' });
     }
 
     try {
@@ -181,6 +182,7 @@ router.post('/cohort-leader', isAdmin, async (req, res) => {
             name,
             admission_number: cohortLeaderId,
             password,
+            cohort_code: cohortCode || '',
             role: 'cohort_leader'
         });
 
@@ -192,7 +194,7 @@ router.post('/cohort-leader', isAdmin, async (req, res) => {
 
 // Add a single new student manually
 router.post('/student', isAdmin, async (req, res) => {
-    const { name, admissionNumber, course } = req.body;
+    const { name, admissionNumber, course, cohortCode } = req.body;
 
     if (!name || !admissionNumber || !course) {
         return res.json({ success: false, message: 'Please fill in all fields.' });
@@ -204,12 +206,25 @@ router.post('/student', isAdmin, async (req, res) => {
             return res.json({ success: false, message: 'Admission Number already exists.' });
         }
 
-        await db.collection('users').add({
+        let cohortLeaderId = null;
+        if (cohortCode) {
+            const clSnap = await db.collection('users').where('role', '==', 'cohort_leader').where('cohort_code', '==', cohortCode).limit(1).get();
+            if (!clSnap.empty) {
+                cohortLeaderId = clSnap.docs[0].id;
+            }
+        }
+
+        const newStudent = {
             name,
             admission_number: admissionNumber,
             course,
             role: 'student'
-        });
+        };
+        if (cohortLeaderId) {
+            newStudent.cohort_leader_id = cohortLeaderId;
+        }
+
+        await db.collection('users').add(newStudent);
 
         res.json({ success: true, message: 'Student created successfully!' });
     } catch (err) {
@@ -219,7 +234,7 @@ router.post('/student', isAdmin, async (req, res) => {
 
 // Edit student details manually
 router.put('/student/:id', isAdmin, async (req, res) => {
-    const { name, admissionNumber, course } = req.body;
+    const { name, admissionNumber, course, cohortCode } = req.body;
     const studentId = req.params.id;
 
     if (!name || !admissionNumber || !course) {
@@ -233,13 +248,24 @@ router.put('/student/:id', isAdmin, async (req, res) => {
             return res.json({ success: false, message: 'Admission Number is already used by another user.' });
         }
 
-        await db.collection('users').doc(studentId).update({
+        const updateData = {
             name,
             admission_number: admissionNumber,
             course
-        });
+        };
 
-        res.json({ success: true, message: 'Student details updated successfully!' });
+        if (cohortCode) {
+            const clSnap = await db.collection('users').where('role', '==', 'cohort_leader').where('cohort_code', '==', cohortCode).limit(1).get();
+            if (!clSnap.empty) {
+                updateData.cohort_leader_id = clSnap.docs[0].id;
+            } else {
+                updateData.cohort_leader_id = null; // optionally clear if invalid code, or just ignore
+            }
+        }
+
+        await db.collection('users').doc(studentId).update(updateData);
+
+        res.json({ success: true, message: 'Student updated successfully!' });
     } catch (err) {
         res.json({ success: false, message: 'Database error.' });
     }

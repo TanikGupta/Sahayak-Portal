@@ -78,6 +78,20 @@ router.post('/upload', isAdmin, uploadSingleExcel, async (req, res) => {
         let updated = 0;
         let errors = [];
 
+        // Pre-fetch all cohort leaders and map by cohort code
+        const cohortLeadersMap = new Map();
+        try {
+            const clSnap = await db.collection('users').where('role', '==', 'cohort_leader').get();
+            clSnap.docs.forEach(d => {
+                const data = d.data();
+                if (data.cohort_code) {
+                    cohortLeadersMap.set(data.cohort_code.trim().toUpperCase(), d.id);
+                }
+            });
+        } catch (e) {
+            console.error('Failed to pre-fetch cohort leaders:', e);
+        }
+
         for (let index = 0; index < rows.length; index++) {
             const row = rows[index];
 
@@ -138,6 +152,12 @@ router.post('/upload', isAdmin, uploadSingleExcel, async (req, res) => {
                 previous_qualification: prevQual || null
             };
 
+            const cohortCode = String(row['Cohort Code'] || row['COHORT CODE'] || row['cohort_code'] || '').trim().toUpperCase();
+            let cohortLeaderId = null;
+            if (cohortCode && cohortLeadersMap.has(cohortCode)) {
+                cohortLeaderId = cohortLeadersMap.get(cohortCode);
+            }
+
             // Remove nulls to avoid overwriting existing data with empty values
             Object.keys(fields).forEach(key => fields[key] === null && delete fields[key]);
 
@@ -151,22 +171,32 @@ router.post('/upload', isAdmin, uploadSingleExcel, async (req, res) => {
                     const currentDetails = existingData.details || {};
                     
                     const newDetails = { ...currentDetails, ...fields };
-
-                    await db.collection('users').doc(doc.id).update({
+                    
+                    const updateData = {
                         name: fullName,
                         course: course,
                         details: newDetails
-                    });
+                    };
+                    if (cohortLeaderId) {
+                        updateData.cohort_leader_id = cohortLeaderId;
+                    }
+
+                    await db.collection('users').doc(doc.id).update(updateData);
                     updated++;
                 } else {
                     // Insert new user
-                    await db.collection('users').add({
+                    const newStudentData = {
                         name: fullName,
                         admission_number: admissionNumber,
                         course: course,
                         role: 'student',
                         details: fields
-                    });
+                    };
+                    if (cohortLeaderId) {
+                        newStudentData.cohort_leader_id = cohortLeaderId;
+                    }
+
+                    await db.collection('users').add(newStudentData);
                     inserted++;
                 }
             } catch (err) {

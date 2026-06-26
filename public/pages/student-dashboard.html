@@ -103,7 +103,6 @@
                     <a href="mailto:TanikGupta@jklu.edu.in" style="color: #F0C060; text-decoration: none; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#F0C060'">TanikGupta@jklu.edu.in</a>
                 </div>
             </div>
-            <a href="/" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:13px; display:block; margin-bottom:10px;">← Back to Login</a>
             <a href="#" onclick="handleLogout()" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">🚪 Logout</a>
         </div>
     </div>
@@ -777,6 +776,10 @@
                             <label>Guardian Mobile</label>
                             <input type="text" id="fHostelA_guardianPhone" />
                         </div>
+                        <div class="form-group">
+                            <label>Guardian Email</label>
+                            <input type="text" id="fHostelA_guardianEmail" />
+                        </div>
                         
                         <div class="form-group" style="margin-top:12px;">
                             <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;">
@@ -799,15 +802,17 @@
                         <div class="alert alert-info">Undertaking for Hostel Students. Take a printout, fill details and sign.</div>
                         
                         <div class="guideline-box">
-                            <h4 style="margin-bottom: 8px;">📋 University Entry–Exit Procedures</h4>
-                            <div class="guideline-item">Students are not permitted to leave the campus between 10:00 PM and 6:00 AM.</div>
-                            <div class="guideline-item">Between 6:00 AM and 10:00 PM, students may move in and out of the campus freely.</div>
-                            <div class="guideline-item">For outstation travel, students must apply for leave via email to the Hostel Warden or submit a leave form at least four hours prior to the scheduled departure to avoid inconvenience.</div>
-                            
-                            <h4 style="margin-top: 15px; margin-bottom: 8px;">📋 Night Attendance</h4>
-                            <div class="guideline-item">Night attendance must be marked between 10:00 PM and 10:30 PM.</div>
-                            <div class="guideline-item">In case of a student fails to mark attendance, the hostel authorities will inform the concerned parents/guardian.</div>
-                            <div class="guideline-item">Repeated failure to mark attendance will attract disciplinary action, including fines.</div>
+                            <h4 style="margin-bottom: 8px;">📋 Declaration of Understanding and Compliance</h4>
+                            <p style="font-size: 13.5px; margin-bottom: 10px; color: #444;">We confirm our understanding and acceptance of the University's and Hostel's policies regarding attendance, leave, campus movement, and official communications.</p>
+                            <ol style="padding-left: 20px; font-size: 13px; color: #444;">
+                                <li style="margin-bottom: 6px;">To ensure student safety and security, students are expected to remain within the University campus between <b>10:00 PM and 6:00 AM</b>. Permission to leave the campus during these hours may be obtained in advance from the Hostel Warden.</li>
+                                <li style="margin-bottom: 6px;">For outstation travel, leave must be applied through the prescribed process at least <b>four hours before</b> the scheduled departure, except in cases of emergency. Requests for a night-out must be submitted no later than <b>6:00 PM</b> on the day of the proposed departure.</li>
+                                <li style="margin-bottom: 6px;">Night-out (overnight stay outside campus) and outstation travel are permitted only with prior approval of the Hostel Warden. Parent/guardian confirmation may be obtained by the University, where required, through registered email or mobile communication.</li>
+                                <li style="margin-bottom: 6px;">All resident students are required to mark night attendance daily between <b>10:00 PM and 10:30 PM</b> through the biometric system. <b>In cases of missed attendance, delayed attendance marking, unauthorized absence, or other hostel-related concerns, the University may communicate with students and their parent(s)/guardian(s) through official communication channels.</b></li>
+                                <li style="margin-bottom: 6px;">Repeated violation of rules, unauthorized absence, or disciplinary issues may result in appropriate action, including a warning, fines, and other action deemed appropriate by the University.</li>
+                                <li style="margin-bottom: 6px;">The student and parent(s)/guardian(s) shall ensure that all contact details always remain updated. The University shall not be responsible for non-receipt of communication due to incorrect or outdated contact information.</li>
+                                <li>The University reserves the right to amend or update rules and procedures from time to time, and such changes shall be communicated to the students.</li>
+                            </ol>
                         </div>
                         
                         <div class="form-group" style="margin-top:12px;">
@@ -1336,6 +1341,7 @@ function autoFillForms() {
     set('fHostelA_guardianRelation', g('hostelGuardianRelation'));
     set('fHostelA_guardianAddress', g('localAddress'));
     set('fHostelA_guardianPhone', g('hostelGuardianPhone'));
+    set('fHostelA_guardianEmail', g('hostelGuardianEmail'));
     set('f008_fOccupation', g('fatherOccupation'));
     set('f008_fDesignation', g('fatherDesignation'));
     set('f008_fCompany', g('fatherCompany'));
@@ -1381,7 +1387,7 @@ function autoFillForms() {
         'f010_aadharName', 'f010_fatherName', 'f010_dob', 'f010_gender',
         'f011_studentName', 'f011_parentName',
         'fHostelA_age', 'fHostelA_maritalStatus', 'fHostelA_stayedBefore', 'fHostelA_medicalHistory', 'fHostelA_medicalDetails',
-        'fHostelA_guardianName', 'fHostelA_guardianRelation', 'fHostelA_guardianAddress', 'fHostelA_guardianPhone'
+        'fHostelA_guardianName', 'fHostelA_guardianRelation', 'fHostelA_guardianAddress', 'fHostelA_guardianPhone', 'fHostelA_guardianEmail'
     ];
 
     formFieldsPrefilled.forEach(id => {
@@ -2618,12 +2624,12 @@ function downloadFormHostelA() {
             
             <div class="form-row-full" style="margin-top: 4px;">
                 <span class="form-label">17- E-Mail (in capital letters):</span>
-                <span class="form-value-dotted">&nbsp;</span>
+                <span class="form-value-dotted" style="text-transform: uppercase;">${getVal('fatherEmail') || '&nbsp;'}</span>
             </div>
             
             <div class="form-row-full" style="margin-top: 4px;">
                 <span class="form-label">18- Permanent Address:</span>
-                <span class="form-value-dotted">${getVal('permanentAddress') || getVal('address') || '&nbsp;'}</span>
+                <span class="form-value-dotted" style="text-transform: uppercase;">${getVal('permanentAddress') || getVal('address') || '&nbsp;'}</span>
             </div>
             
             <div class="form-row-full" style="margin-top: 4px;">
@@ -2634,7 +2640,7 @@ function downloadFormHostelA() {
             <div class="inline-row" style="margin-top: 4px;">
                 <div style="display: flex; flex: 1.3; align-items: flex-end;">
                     <span class="form-label">20- Occupation:</span>
-                    <span class="form-value-dotted">${[getVal('motherOccupation'), getVal('motherDesignation'), getVal('motherCompany')].filter(Boolean).join(' / ') || '&nbsp;'}</span>
+                    <span class="form-value-dotted" style="text-transform: uppercase;">${[getVal('motherOccupation'), getVal('motherDesignation'), getVal('motherCompany')].filter(Boolean).join(' / ') || '&nbsp;'}</span>
                 </div>
                 <div style="display: flex; flex: 1; align-items: flex-end;">
                     <span class="form-label">21- Mother's Contact Number:</span>
@@ -2644,31 +2650,37 @@ function downloadFormHostelA() {
             
             <div class="form-row-full" style="margin-top: 4px;">
                 <span class="form-label">22- E-Mail (in capital letters):</span>
-                <span class="form-value-dotted">&nbsp;</span>
+                <span class="form-value-dotted" style="text-transform: uppercase;">${getVal('motherEmail') || '&nbsp;'}</span>
             </div>
             
             <div class="inline-row" style="margin-top: 4px;">
                 <div style="display: flex; flex: 1.8; align-items: flex-end;">
                     <span class="form-label">23- Name of Local Guardian (if any):</span>
-                    <span class="form-value-dotted">${getVal('fHostelA_guardianName') || '&nbsp;'}</span>
+                    <span class="form-value-dotted" style="text-transform: uppercase;">${getVal('fHostelA_guardianName') || '&nbsp;'}</span>
                 </div>
                 <div style="display: flex; flex: 1; align-items: flex-end;">
                     <span class="form-label">24- Relation:</span>
-                    <span class="form-value-dotted">${getVal('fHostelA_guardianRelation') || '&nbsp;'}</span>
+                    <span class="form-value-dotted" style="text-transform: uppercase;">${getVal('fHostelA_guardianRelation') || '&nbsp;'}</span>
                 </div>
             </div>
             
             <div class="form-row-full" style="margin-top: 4px;">
                 <span class="form-label">25- Address of Local Guardian:</span>
-                <span class="form-value-dotted">${getVal('fHostelA_guardianAddress') || '&nbsp;'}</span>
+                <span class="form-value-dotted" style="text-transform: uppercase;">${getVal('fHostelA_guardianAddress') || '&nbsp;'}</span>
             </div>
             <div class="form-row-full" style="margin-top: 4px; min-height: 15px;">
                 <span class="form-value-dotted" style="padding-left:0;">&nbsp;</span>
             </div>
             
-            <div class="form-row-full" style="margin-top: 4px; margin-bottom: 4px;">
-                <span class="form-label">26- Local Guardian's Mobile No.:</span>
-                <span class="form-value-dotted">${getPhoneVal('fHostelA_guardianPhone') || '&nbsp;'}</span>
+            <div class="inline-row" style="margin-top: 4px; margin-bottom: 4px;">
+                <div style="display: flex; flex: 1; align-items: flex-end;">
+                    <span class="form-label">26- Local Guardian's Mobile No.:</span>
+                    <span class="form-value-dotted">${getPhoneVal('fHostelA_guardianPhone') || '&nbsp;'}</span>
+                </div>
+                <div style="display: flex; flex: 1; align-items: flex-end; margin-left: 10px;">
+                    <span class="form-label">Email:</span>
+                    <span class="form-value-dotted" style="text-transform: uppercase;">${getVal('fHostelA_guardianEmail') || '&nbsp;'}</span>
+                </div>
             </div>
         </div>
         
@@ -2729,180 +2741,145 @@ function downloadFormHostelB() {
     };
 
     const sName = [getVal('firstName'), getVal('middleName'), getVal('lastName')].filter(Boolean).join(' ').toUpperCase();
-    const admNo = getVal('profileAdmNo');
-    const course = currentUser.course || '';
-    const specialization = getVal('specialization');
-    const progBranch = course + (specialization ? ` / ${specialization}` : '');
-
+    
     const pName = getVal('fatherName') || getVal('hostelGuardianName') || '';
+    const pEmail = getVal('fatherEmail') || getVal('hostelGuardianEmail') || '';
+    const pPhone = getPhoneVal('fatherPhone') || getPhoneVal('hostelGuardianPhone') || '';
     const studentNamePlaceholder = sName || '&nbsp;';
 
-    pw.document.write(`<!DOCTYPE html><html><head><title>Annexure - B: Consent Form for Parent(s)/Guardian</title>
+    pw.document.write(`<!DOCTYPE html><html><head><title>Parent/Guardian Consent for Hostellers</title>
     <style>
         @page { margin: 15mm; size: A4; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Times New Roman', Times, serif; font-size: 14.5px; color: #000; line-height: 1.35; background: #fff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        body { font-family: 'Times New Roman', Times, serif; font-size: 13px; color: #000; line-height: 1.3; background: #fff; padding-top: 50px; }
         
-        .page-wrapper { position: relative; min-height: 260mm; padding: 0; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; }
+        .page-wrapper { position: relative; padding: 0; margin: 0 auto; box-sizing: border-box; display: flex; flex-direction: column; }
         
-        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 5px; }
-        .logo-img { height: 65px; width: auto; object-fit: contain; }
-        .annex-title { font-weight: 800; font-size: 12px; font-family: 'Times New Roman', Times, serif; text-align: center; }
-        .univ-text { display: flex; flex-direction: column; align-items: flex-end; font-family: 'Times New Roman', Times, serif; }
-        .univ-text div:first-child { font-size: 19px; letter-spacing: 0px; }
-        .univ-text div:last-child { font-size: 21px; letter-spacing: 2px; }
-
-        .content-box { border: 4px solid #555; position: relative; flex-grow: 1; display: flex; flex-direction: column; }
-        .banner-bar { background: #555; color: #fff; text-align: center; font-size: 15px; padding: 5px; margin: 0; }
+        .content-box { border: 1.5px solid #000; padding: 45px 15px 15px 15px; position: relative; display: flex; flex-direction: column; min-height: 250mm; }
         
-        .content { padding: 10px 20px; }
-        .section-title { font-weight: bold; font-size: 15.5px; margin-top: 10px; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .logo-wrapper { position: absolute; top: -45px; left: -10px; background: transparent; padding-right: 15px; padding-bottom: 0px; z-index: 10; }
+        .logo-img { height: 90px; width: auto; object-fit: contain; }
         
-        ul { padding-left: 25px; margin-bottom: 10px; }
-        li { margin-bottom: 4px; text-align: justify; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; margin-top: 10px; margin-bottom: 0px; gap: 10px; }
-        .grid-3 { display: grid; grid-template-columns: 1.5fr 1fr 1fr; margin-bottom: 15px; gap: 10px; }
+        .title-box { border: 1.5px solid #000; text-align: center; font-weight: bold; font-size: 16px; margin-top: 5px; margin-bottom: 12px; padding: 6px; }
+        .title-box div:first-child { font-size: 18px; margin-bottom: 4px; }
         
-        .form-row { display: flex; align-items: flex-end; width: 100%; font-size: 14.5px; }
-        .form-label { white-space: nowrap; margin-right: 6px; font-weight: normal; }
-        .form-value-dotted { flex-grow: 1; display: flex; align-items: flex-end; font-weight: normal; padding-left: 6px; min-height: 18px; border-bottom: 1.5px dotted #000; padding-bottom: 2px; }
-
-        .consent-para { margin-top: 10px; margin-bottom: 10px; text-align: justify; }
-        .italic-blue { font-style: italic; color: #0066cc; text-decoration: underline; margin-bottom: 5px; text-align: justify; font-weight: bold; }
-        .italic-text { font-style: italic; text-align: justify; margin-bottom: 15px; }
+        .subtitle { font-weight: bold; font-size: 14px; margin-bottom: 8px; }
         
-        .parent-section { margin-bottom: 15px; }
+        ol { padding-left: 20px; margin-bottom: 10px; }
+        li { margin-bottom: 5px; text-align: justify; }
+        .consent-para { margin-bottom: 8px; text-align: justify; }
         
-        .signatures-row { display: flex; justify-content: space-between; margin-top: auto; font-weight: bold; padding-top: 20px; }
+        .form-row { display: flex; align-items: flex-end; margin-bottom: 8px; font-size: 13.5px; font-weight: bold; }
+        .form-label { white-space: nowrap; margin-right: 6px; }
+        .form-value-line { flex-grow: 1; border-bottom: 1px solid #000; min-height: 18px; padding-left: 5px; font-weight: normal; }
+        
+        .inline-group { display: flex; gap: 20px; margin-bottom: 8px; }
+        .inline-group .form-row { flex: 1; margin-bottom: 0; }
+        
+        .signature-section { margin-top: auto; padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; font-weight: bold; }
     </style></head><body onload="window.print()">
     
     <div class="page-wrapper">
-        <div class="header-container">
-            <div style="width: 25%; display: flex; align-items: flex-start;">
+        <div class="content-box">
+            <div class="logo-wrapper">
                 <img src="${logoUrl}" class="logo-img" onerror="this.style.display='none'" />
             </div>
-            <div style="width: 50%; display: flex; justify-content: center; align-items: center;">
-                <div class="annex-title">ANNEXURE - B</div>
+            
+            <div class="title-box">
+                <div>JK Lakshmipat University Jaipur</div>
+                <div>Parent/Guardian Consent for Hostellers</div>
             </div>
-            <div style="width: 35%;" class="univ-text">
-                <div>JK LAKSHMIPAT</div>
-                <div>UNIVERSITY</div>
-            </div>
-        </div>
-        
-        <div class="content-box">
-        
-        <div class="banner-bar">Consent Form for Parent(s)/Guardian</div>
-        
-        <div class="content">
-            <div class="section-title">
-                <span>University Entry–Exit Procedures</span>
-                <span>Date: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span>
-            </div>
-            <ul>
-                <li>Students are not permitted to leave the campus between 10:00 PM and 6:00 AM.</li>
-                <li>Between 6:00 AM and 10:00 PM, students may move in and out of the campus freely.</li>
-                <li>For outstation travel, students must apply for leave via email to the Hostel Warden or submit a leave form at least four hours prior to the scheduled departure to avoid inconvenience.</li>
-            </ul>
-
-            <div class="section-title">Night Attendance</div>
-            <ul>
-                <li>Night attendance must be marked between 10:00 PM and 10:30 PM.</li>
-                <li>In case a student fails to mark attendance, the hostel authorities will inform the concerned parents/guardian.</li>
-                <li>Repeated failure to mark attendance will attract disciplinary action, including fines.</li>
-            </ul>
-
-            <div class="grid-2">
-                <div class="form-row">
-                    <span class="form-label">1. Student Name:</span>
-                    <span class="form-value-dotted">${studentNamePlaceholder}</span>
-                </div>
-                <div class="form-row">
-                    <span class="form-label">2. Mobile No.:</span>
-                    <span class="form-value-dotted">${getPhoneVal('phone') || '&nbsp;'}</span>
-                </div>
-            </div>
-            <div class="grid-3" style="margin-top: 10px;">
-                <div class="form-row">
-                    <span class="form-label">3. Roll NO:</span>
-                    <span class="form-value-dotted">&nbsp;</span>
-                </div>
-                <div class="form-row">
-                    <span class="form-label">4. Hostel:</span>
-                    <span class="form-value-dotted">&nbsp;</span>
-                </div>
-                <div class="form-row">
-                    <span class="form-label">5. Room No.:</span>
-                    <span class="form-value-dotted">&nbsp;</span>
-                </div>
-            </div>
-
-            <div class="section-title" style="margin-top: 15px;">Leave & Overnight stay Process: -</div>
+            
+            <div class="subtitle">Declaration of Understanding and Compliance with University and Hostel Regulations</div>
+            
             <div class="consent-para">
-                I give my consent to university that my ward be allowed to check-in and check-out of the University Campus for overnight stay out of the campus, warden office will take prior approval from us. (Please tick):
+                We, the undersigned student and parent(s)/guardian(s), confirm our understanding and acceptance of the University's and Hostel's policies regarding attendance, leave, campus movement, and official communications.
             </div>
-            <div class="italic-blue">
-                (I also agree to submit our permission for night-out via email to wardenboys@jklu.edu.in / wardengirls@jklu.edu.in)
+            
+            <ol>
+                <li>To ensure student safety and security, students are expected to remain within the University campus between <b>10:00 PM and 6:00 AM</b>. Permission to leave the campus during these hours may be obtained in advance from the Hostel Warden.</li>
+                <li>For outstation travel, leave must be applied through the prescribed process at least <b>four hours before</b> the scheduled departure, except in cases of emergency. Requests for a night-out must be submitted no later than <b>6:00 PM</b> on the day of the proposed departure.</li>
+                <li>Night-out (overnight stay outside campus) and outstation travel are permitted only with prior approval of the Hostel Warden. Parent/guardian confirmation may be obtained by the University, where required, through registered email or mobile communication.</li>
+                <li>All resident students are required to mark night attendance daily between <b>10:00 PM and 10:30 PM</b> through the biometric system. <b>In cases of missed attendance, delayed attendance marking, unauthorized absence, or other hostel-related concerns, the University may communicate with students and their parent(s)/guardian(s) through email, SMS, phone calls, WhatsApp, or other official communication channels. Parents are encouraged to stay attentive to such communications and work collaboratively with the University in guiding and supporting their ward.</b></li>
+                <li>Repeated violation of rules, unauthorized absence, or disciplinary issues may result in appropriate action, including a warning, fines, and other action deemed appropriate by the University.</li>
+                <li>The student and parent(s)/guardian(s) shall ensure that all contact details (phone number, email, etc.) always remain updated. The University shall not be responsible for non-receipt of communication due to incorrect or outdated contact information.</li>
+                <li>The University reserves the right to amend or update rules and procedures from time to time, and such changes shall be communicated to the students.</li>
+            </ol>
+            
+            <div class="consent-para">
+                I/We hereby confirm that we have read, understood, and accepted the above terms and conditions.
             </div>
-            <div class="italic-text">
-                The request must be submitted latest by 6:00 PM on the day of the student’s night-out. If a student is found absent (staying outside the campus) without prior information or approval from the Hostel Warden, the University reserves the right to take appropriate disciplinary action as per rules.
+            
+            <div class="form-row">
+                <span class="form-label">Parent/ Guardian Name 1:</span>
+                <span class="form-value-line">${pName}</span>
             </div>
-
-            <div class="parent-section">
-                <div class="form-row" style="margin-bottom: 10px;">
-                    <span class="form-label"><b>Parent/ Guardian Name 1:</b></span>
-                    <span class="form-value-dotted">&nbsp;</span>
-                </div>
-                <div class="form-row" style="margin-bottom: 10px;">
-                    <span class="form-label"><b>Email:</b></span>
-                    <span class="form-value-dotted">&nbsp;</span>
-                </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 10px;">
-                    <div class="form-row" style="flex: 1.5;">
-                        <span class="form-label"><b>Signature:</b></span>
-                        <span class="form-value-dotted">&nbsp;</span>
-                    </div>
-                    <div class="form-row" style="flex: 1;">
-                        <span class="form-label"><b>Mobile:</b></span>
-                        <span class="form-value-dotted">&nbsp;</span>
-                    </div>
-                </div>
+            <div class="form-row">
+                <span class="form-label">Email:</span>
+                <span class="form-value-line">${pEmail}</span>
             </div>
-
-            <div class="parent-section">
-                <div class="form-row" style="margin-bottom: 10px;">
-                    <span class="form-label"><b>Parent/ Guardian Name 2:</b></span>
-                    <span class="form-value-dotted">&nbsp;</span>
+            <div class="inline-group">
+                <div class="form-row">
+                    <span class="form-label">Mobile:</span>
+                    <span class="form-value-line">${pPhone}</span>
                 </div>
-                <div class="form-row" style="margin-bottom: 10px;">
-                    <span class="form-label"><b>Email:</b></span>
-                    <span class="form-value-dotted">&nbsp;</span>
-                </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 10px;">
-                    <div class="form-row" style="flex: 1.5;">
-                        <span class="form-label"><b>Signature:</b></span>
-                        <span class="form-value-dotted">&nbsp;</span>
-                    </div>
-                    <div class="form-row" style="flex: 1;">
-                        <span class="form-label"><b>Mobile:</b></span>
-                        <span class="form-value-dotted">&nbsp;</span>
-                    </div>
+                <div class="form-row">
+                    <span class="form-label">Signature:</span>
+                    <span class="form-value-line"></span>
                 </div>
             </div>
-
-            <div class="signatures-row">
-                <div>(Signature of Student)</div>
+            
+            <div style="margin-top: 8px;"></div>
+            
+            <div class="form-row">
+                <span class="form-label">Parent/ Guardian Name 2:</span>
+                <span class="form-value-line"></span>
+            </div>
+            <div class="form-row">
+                <span class="form-label">Email:</span>
+                <span class="form-value-line"></span>
+            </div>
+            <div class="inline-group">
+                <div class="form-row">
+                    <span class="form-label">Mobile:</span>
+                    <span class="form-value-line"></span>
+                </div>
+                <div class="form-row">
+                    <span class="form-label">Signature:</span>
+                    <span class="form-value-line"></span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 8px;"></div>
+            
+            <div class="form-row">
+                <span class="form-label">Student Name:</span>
+                <span class="form-value-line">${studentNamePlaceholder}</span>
+            </div>
+            <div class="inline-group">
+                <div class="form-row">
+                    <span class="form-label">Mobile:</span>
+                    <span class="form-value-line">${getPhoneVal('phone') || '&nbsp;'}</span>
+                </div>
+                <div class="form-row">
+                    <span class="form-label">Signature:</span>
+                    <span class="form-value-line"></span>
+                </div>
+            </div>
+            
+            <div class="signature-section">
+                <div style="display: flex; align-items: flex-end; width: 45%;">
+                    <span style="margin-right: 5px;">Date:</span>
+                    <span style="border-bottom: 1px solid #000; flex-grow: 1;"></span>
+                </div>
                 <div>(Signature of Hostel Warden)</div>
             </div>
-        </div>
+            
         </div>
     </div>
-    
     </body></html>`);
     pw.document.close(); pw.print();
 }
-
 function downloadForm011() {
     const agree = document.getElementById('f011_agree');
     if (!agree || !agree.checked) { alert('Please check the self-declaration checkbox before downloading.'); return; }
@@ -3037,6 +3014,7 @@ function showSection(name, el) {
     if (name === 'forms') { autoFillForms(); updateDownloadButtons(); }
     if (name === 'status') loadStatus();
     if (name === 'messages') loadMessages();
+    document.querySelector('.page-content').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function handleLogout() {

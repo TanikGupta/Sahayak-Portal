@@ -24,26 +24,19 @@ const uploadMultipleDocuments = (req, res, next) => {
     
     busboy.on('file', (fieldname, file, info) => {
         const { filename } = info;
-        const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const savedFilename = unique + path.extname(filename);
-        const filePath = path.join(os.tmpdir(), savedFilename);
         
-        const writeStream = fs.createWriteStream(filePath);
-        file.pipe(writeStream);
+        // As requested, documents are not saved permanently.
+        // We simply drain the stream here so it doesn't consume server RAM.
+        file.resume();
         
         if (!req.files[fieldname]) {
             req.files[fieldname] = [];
         }
         req.files[fieldname].push({ 
             originalname: filename, 
-            filename: savedFilename,
-            path: filePath
+            filename: 'not_saved_' + filename,
+            path: 'not_saved'
         });
-        
-        const promise = new Promise((resolve) => {
-            writeStream.on('close', resolve);
-        });
-        promises.push(promise);
     });
 
     busboy.on('finish', async () => {

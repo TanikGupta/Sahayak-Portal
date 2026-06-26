@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahayak Portel ( Student Documentation Help )</title>
+    <title>Sahayak Portal ( Student Documentation Help )</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <div class="sidebar">
         <div class="sidebar-logo">
             <img src="/Jklulogo.png" alt="JKLU" style="width:50px; margin-bottom:8px;" />
-            <h2>Sahayak Portel</h2>
+            <h2>Sahayak Portal</h2>
             <p>Student Documentation Help</p>
         </div>
         <ul class="sidebar-menu">
@@ -48,9 +48,6 @@
                     <a href="mailto:TanikGupta@jklu.edu.in" style="color: #F0C060; text-decoration: none; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#F0C060'">TanikGupta@jklu.edu.in</a>
                 </div>
             </div>
-            <a href="/" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:13px; display:block; margin-bottom:10px;">
-                ← Back to Login
-            </a>
             <a href="#" onclick="handleLogout()" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">
                 🚪 Logout
             </a>
@@ -131,12 +128,12 @@
             <!-- ALL STUDENTS -->
             <div id="section-students" style="display:none;">
                 <div style="display: flex; gap: 24px; align-items: flex-start;">
-                    <div class="card" style="flex: 2; overflow-x: auto;">
+                    <div class="card" style="flex: 2; min-width: 0; overflow-x: auto;">
                         <h3>👨‍🎓 All Students</h3>
-                        <div id="allStudentsList"><p style="color:#888;">Loading...</p></div>
+                        <div id="allStudentsList" style="overflow-x: auto; min-width: 100%;"><p style="color:#888;">Loading...</p></div>
                     </div>
                     
-                    <div class="card" style="flex: 1; min-width: 300px; max-width: 380px; border-top: 4px solid #0f2c59; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px;">
+                    <div class="card" style="flex: 1; min-width: 280px; max-width: 380px; border-top: 4px solid #0f2c59; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px;">
                         <h3 style="color:#0f2c59; margin-bottom: 16px; border-bottom: 1.5px solid #f0f4f8; padding-bottom: 8px; font-size:16px; font-weight:700;">➕ Add Student</h3>
                         <div id="addStudentMsg" class="success-msg" style="margin-bottom: 12px; font-size:12.5px;"></div>
                         
@@ -164,6 +161,11 @@
                             <input type="text" id="newStudentAdmissionNo" placeholder="e.g. JKLU/B.TECH/2026/0001" style="width:100%; padding:8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px;" />
                         </div>
                         
+                        <div class="form-group" style="margin-bottom: 12px; display:flex; flex-direction:column; gap:4px;">
+                            <label style="font-weight: 600; font-size:12px; color:#475569; margin:0;">Cohort Code</label>
+                            <input type="text" id="newStudentCohortCode" placeholder="e.g. A1, C4" style="width:100%; padding:8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px;" />
+                        </div>
+                        
                         <button class="btn-primary" onclick="addStudent()" style="width:100%; margin-top: 8px; padding: 10px; font-size:13px; font-weight:700; background:#0f2c59; color:white; border:none; border-radius:6px; cursor:pointer;">
                             Create Student
                         </button>
@@ -175,13 +177,16 @@
             <div id="section-cohortLeaders" style="display:none;">
                 <div style="display: flex; gap: 24px; align-items: flex-start;">
                     <!-- Left: Cohort Leaders List -->
-                    <div class="card" style="flex: 2;">
+                    <div class="card" style="flex: 2; min-width: 0; overflow-x: auto;">
                         <h3>👨‍🏫 All Cohort Leaders</h3>
-                        <div id="allCohortLeadersList"><p style="color:#888;">Loading...</p></div>
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="cohortLeaderSearch" onkeyup="renderCohortLeaders()" placeholder="🔍 Search by name, ID, or cohort code..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;" />
+                        </div>
+                        <div id="allCohortLeadersList" style="overflow-x: auto;"><p style="color:#888;">Loading...</p></div>
                     </div>
                     
                     <!-- Right: Add Cohort Leader Form -->
-                    <div class="card" style="flex: 1; max-width: 380px; border-top: 4px solid #0f2c59; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px;">
+                    <div class="card" style="flex: 1; min-width: 280px; max-width: 380px; border-top: 4px solid #0f2c59; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 20px;">
                         <h3 style="color:#0f2c59; margin-bottom: 16px; border-bottom: 1.5px solid #f0f4f8; padding-bottom: 8px; font-size:16px; font-weight:700;">➕ Add Cohort Leader</h3>
                         <div id="addCohortMsg" class="success-msg" style="margin-bottom: 12px; font-size:12.5px;"></div>
                         
@@ -193,6 +198,11 @@
                         <div class="form-group" style="margin-bottom: 12px; display:flex; flex-direction:column; gap:4px;">
                             <label style="font-weight: 600; font-size:12px; color:#475569; margin:0;">Cohort Leader ID</label>
                             <input type="text" id="newCohortId" placeholder="e.g. CL002" style="width:100%; padding:8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px;" />
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 12px; display:flex; flex-direction:column; gap:4px;">
+                            <label style="font-weight: 600; font-size:12px; color:#475569; margin:0;">Cohort Code</label>
+                            <input type="text" id="newCohortCode" placeholder="e.g. A1, C4" style="width:100%; padding:8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px;" />
                         </div>
                         
                         <div class="form-group" style="margin-bottom: 16px; display:flex; flex-direction:column; gap:4px;">
@@ -253,6 +263,9 @@
 
                     <div class="card" style="margin-top:20px;">
                         <h3>📋 Current Assignments</h3>
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="assignmentSearch" onkeyup="renderAssignmentsList()" placeholder="🔍 Search by student name, application no, or cohort leader..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;" />
+                        </div>
                         <div id="assignmentsList"><p style="color:#888;">Loading...</p></div>
                     </div>
                 </div>
@@ -572,6 +585,13 @@ function renderDashboardCohortSummary() {
         return;
     }
 
+    // Sort alphanumerically by cohort code (A1, A2, etc.)
+    let sortedLeaders = [...allCohortLeaders].sort((a, b) => {
+        const codeA = (a.cohort_code || '').toString().toUpperCase();
+        const codeB = (b.cohort_code || '').toString().toUpperCase();
+        return codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
     // Render Table
     let html = `
         <table class="data-table">
@@ -586,7 +606,7 @@ function renderDashboardCohortSummary() {
                 </tr>
             </thead>
             <tbody>
-                ${allCohortLeaders.map(m => {
+                ${sortedLeaders.map(m => {
                     const cohortStudents = allStudents.filter(s => s.cohort_leader_id === m.id);
                     const total = cohortStudents.length;
                     const lockedCount = cohortStudents.filter(s => s.form_status === 'submitted').length;
@@ -596,7 +616,7 @@ function renderDashboardCohortSummary() {
                     
                     return `
                         <tr>
-                            <td><strong>${m.name}</strong></td>
+                            <td><strong>${m.cohort_code ? m.cohort_code + ' - ' : ''}${m.name}</strong></td>
                             <td style="text-align:center;"><span class="badge badge-review">${total}</span></td>
                             <td style="text-align:center;"><span class="badge badge-verified">${lockedCount}</span></td>
                             <td style="text-align:center;"><span class="badge badge-pending">${draftCount}</span></td>
@@ -615,8 +635,8 @@ function renderDashboardCohortSummary() {
     // Fill select dropdown if not already populated
     const previousSelection = selectEl.value;
     let optionsHtml = '<option value="all">🌐 All Cohorts Combined</option>';
-    allCohortLeaders.forEach(m => {
-        optionsHtml += `<option value="${m.id}">👨‍🏫 ${m.name}</option>`;
+    sortedLeaders.forEach(m => {
+        optionsHtml += `<option value="${m.id}">👨‍🏫 ${m.cohort_code ? m.cohort_code + ' - ' : ''}${m.name}</option>`;
     });
     selectEl.innerHTML = optionsHtml;
     if (previousSelection && [...selectEl.options].some(o => o.value === previousSelection)) {
@@ -643,7 +663,7 @@ function updateCohortDonutChart() {
     if (selectedCohort === 'all') {
         filtered = allStudents;
     } else {
-        const cohortId = parseInt(selectedCohort);
+        const cohortId = selectedCohort;
         filtered = allStudents.filter(s => s.cohort_leader_id === cohortId);
     }
 
@@ -734,10 +754,33 @@ function renderCohortLeaders() {
         container.innerHTML = '<p style="color:#888;">No cohort leaders found.</p>';
         return;
     }
+    
+    // Sort alphanumerically by cohort code (A1, A2, etc.)
+    let sortedLeaders = [...allCohortLeaders].sort((a, b) => {
+        const codeA = (a.cohort_code || '').toString().toUpperCase();
+        const codeB = (b.cohort_code || '').toString().toUpperCase();
+        return codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    const sq = (document.getElementById('cohortLeaderSearch')?.value || '').toLowerCase();
+    if (sq) {
+        sortedLeaders = sortedLeaders.filter(l => 
+            (l.name || '').toLowerCase().includes(sq) || 
+            (l.admission_number || '').toLowerCase().includes(sq) ||
+            (l.cohort_code || '').toLowerCase().includes(sq)
+        );
+    }
+
+    if (sortedLeaders.length === 0) {
+        container.innerHTML = '<p style="color:#888;">No matches found.</p>';
+        return;
+    }
+
     container.innerHTML = `
         <table class="data-table">
             <thead>
                 <tr>
+                    <th>Cohort Code</th>
                     <th>Cohort Leader Name</th>
                     <th>Cohort Leader ID</th>
                     <th>Password</th>
@@ -749,14 +792,15 @@ function renderCohortLeaders() {
                 </tr>
             </thead>
             <tbody>
-                ${allCohortLeaders.map(m => {
+                ${sortedLeaders.map(m => {
                     const cohortStudents = allStudents.filter(s => s.cohort_leader_id === m.id);
                     const lockedCount = cohortStudents.filter(s => s.form_status === 'submitted').length;
                     const draftCount = cohortStudents.filter(s => !s.form_status || s.form_status === 'draft').length;
                     const requestCount = cohortStudents.filter(s => s.cohort_approval === 'edit_requested').length;
                     return `
                         <tr>
-                            <td><strong>${m.name}</strong></td>
+                            <td><strong>${m.cohort_code || '<span style="color:#aaa;">N/A</span>'}</strong></td>
+                            <td>${m.name}</td>
                             <td>${m.admission_number}</td>
                             <td>
                                 <span class="password-text" id="pass-${m.id}" style="font-family: monospace; display: none; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${m.password || 'N/A'}</span>
@@ -907,16 +951,31 @@ function renderAssignDropdowns() {
 
 function renderAssignmentsList() {
     const container = document.getElementById('assignmentsList');
+    const searchQ = (document.getElementById('assignmentSearch')?.value || '').toLowerCase();
+
     if (!allStudents || allStudents.length === 0) {
         container.innerHTML = '<p style="color:#888;">No students yet.</p>';
         return;
     }
+
+    const filteredStudents = allStudents.filter(s => {
+        const clName = (s.cohort_leader_name || s.mentor_name || 'Not assigned').toLowerCase();
+        const sName = (s.name || '').toLowerCase();
+        const appNo = (s.admission_number || '').toLowerCase();
+        return clName.includes(searchQ) || sName.includes(searchQ) || appNo.includes(searchQ);
+    });
+
+    if (filteredStudents.length === 0) {
+        container.innerHTML = '<p style="color:#888;">No matching assignments found.</p>';
+        return;
+    }
+
     let html = `
         <table class="data-table">
             <thead>
                 <tr><th>#</th><th>Student Name</th><th>Application No.</th><th>Course</th><th>Assigned Cohort Leader</th></tr>
             </thead><tbody>`;
-    allStudents.forEach((s, i) => {
+    filteredStudents.forEach((s, i) => {
         const clName = s.cohort_leader_name || s.mentor_name;
         html += `<tr>
             <td style="text-align:center;">${i + 1}</td>
@@ -1251,6 +1310,7 @@ function showSection(name, el) {
     if (name === 'cohortLeaders') renderCohortLeaders();
     if (name === 'assign') { renderAssignDropdowns(); renderAssignmentsList(); }
     if (name === 'excel') loadExcelStudents();
+    document.querySelector('.page-content').scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function handleLogout() {
@@ -1270,12 +1330,13 @@ function generateRandomPassword() {
 async function addCohortLeader() {
     const name = document.getElementById('newCohortName').value.trim();
     const cohortLeaderId = document.getElementById('newCohortId').value.trim();
+    const cohortCode = document.getElementById('newCohortCode').value.trim();
     const password = document.getElementById('newCohortPassword').value.trim();
     const msgDiv = document.getElementById('addCohortMsg');
 
     if (!name || !cohortLeaderId || !password) {
         msgDiv.style.color = '#c0392b';
-        msgDiv.textContent = '⚠️ Please fill in all fields.';
+        msgDiv.textContent = '⚠️ Please fill in Name, ID, and Password.';
         return;
     }
 
@@ -1283,7 +1344,7 @@ async function addCohortLeader() {
         const res = await fetch('/api/admin/cohort-leader', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, cohortLeaderId, password })
+            body: JSON.stringify({ name, cohortLeaderId, password, cohortCode })
         });
         const data = await res.json();
         if (data.success) {
@@ -1291,6 +1352,7 @@ async function addCohortLeader() {
             msgDiv.textContent = '✅ Cohort Leader created successfully!';
             document.getElementById('newCohortName').value = '';
             document.getElementById('newCohortId').value = '';
+            document.getElementById('newCohortCode').value = '';
             document.getElementById('newCohortPassword').value = '';
             renderCohortLeaders(); // Refresh the list
         } else {
@@ -1320,6 +1382,7 @@ async function addStudent() {
     const name = document.getElementById('newStudentName').value.trim();
     const admissionNumber = document.getElementById('newStudentAdmissionNo').value.trim();
     const course = document.getElementById('newStudentCourse').value;
+    const cohortCode = document.getElementById('newStudentCohortCode').value.trim();
     const msgDiv = document.getElementById('addStudentMsg');
 
     if (!name || !admissionNumber || !course) {
@@ -1332,7 +1395,7 @@ async function addStudent() {
         const res = await fetch('/api/admin/student', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, admissionNumber, course })
+            body: JSON.stringify({ name, admissionNumber, course, cohortCode })
         });
         const data = await res.json();
         if (data.success) {
@@ -1340,6 +1403,7 @@ async function addStudent() {
             msgDiv.textContent = '✅ ' + data.message;
             document.getElementById('newStudentName').value = '';
             document.getElementById('newStudentAdmissionNo').value = '';
+            document.getElementById('newStudentCohortCode').value = '';
             loadAllData(); // Refresh everything to show new student
         } else {
             msgDiv.style.color = '#c0392b';
