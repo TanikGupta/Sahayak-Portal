@@ -492,8 +492,9 @@ router.get('/export-students', isAdmin, async (req, res) => {
         // Format dates and prepare rows
         const formattedRows = students.map((row, index) => {
             let dobStr = '';
-            if (row.date_of_birth) {
-                const d = new Date(row.date_of_birth);
+            const dob = row.dob || row.date_of_birth;
+            if (dob) {
+                const d = new Date(dob);
                 const tzOffset = d.getTimezoneOffset() * 60000;
                 const localDate = new Date(d.getTime() - tzOffset);
                 dobStr = localDate.toISOString().split('T')[0];
@@ -505,27 +506,27 @@ router.get('/export-students', isAdmin, async (req, res) => {
                 'Full Name': row.student_name || '',
                 'Course': row.course || '',
                 'Specialization': row.specialization || '',
-                'First Name': row.first_name || '',
-                'Middle Name': row.middle_name || '',
-                'Last Name': row.last_name || '',
+                'First Name': row.firstName || row.first_name || '',
+                'Middle Name': row.middleName || row.middle_name || '',
+                'Last Name': row.lastName || row.last_name || '',
                 'Date of Birth': dobStr,
                 'Gender': row.gender || '',
                 'Category': row.category || '',
                 'Mobile Number': row.phone || '',
                 'Email ID': row.email || '',
-                'Blood Group': row.blood_group || '',
-                "Father's Name": row.father_name || '',
-                "Mother's Name": row.mother_name || '',
-                'Permanent Address': row.address || '',
-                'Local Address': row.local_address || '',
-                'Emergency Contact Person': row.emergency_name || '',
-                'Emergency Contact Relation': row.emergency_relation || '',
-                'Emergency Contact Mobile': row.emergency_mobile || row.emergency_phone || '',
-                "Father's Mobile": row.father_phone || '',
-                "Mother's Mobile": row.mother_phone || '',
-                '12th Percentage': parse12th(row.previous_qualification),
-                'JEE Score': parseJee(row.previous_qualification),
-                'Aadhaar Card': row.apaar_id || ''
+                'Blood Group': row.bloodGroup || row.blood_group || '',
+                "Father's Name": row.fatherName || row.father_name || '',
+                "Mother's Name": row.motherName || row.mother_name || '',
+                'Permanent Address': row.permanentAddress || row.address || '',
+                'Local Address': row.localAddress || row.local_address || '',
+                'Emergency Contact Person': row.emergencyName || row.emergency_name || '',
+                'Emergency Contact Relation': row.emergencyRelation || row.emergency_relation || '',
+                'Emergency Contact Mobile': row.emergencyMobile || row.emergencyPhone || row.emergency_mobile || row.emergency_phone || '',
+                "Father's Mobile": row.fatherPhone || row.father_phone || '',
+                "Mother's Mobile": row.motherPhone || row.mother_phone || '',
+                '12th Percentage': parse12th(row.prevQual || row.previous_qualification),
+                'JEE Score': parseJee(row.prevQual || row.previous_qualification),
+                'Aadhaar Card': row.apaarId || row.apaar_id || row.aadharCard || ''
             };
         });
 
@@ -547,7 +548,8 @@ router.get('/export-students', isAdmin, async (req, res) => {
             'S.No.', 'Admission Number', 'Student Name', 'Course', 'Specialization',
             'Hostel Age', 'Marital Status', 'Stayed in Hostel Before',
             'Medical History', 'Medical Details', 'Local Guardian Name',
-            'Local Guardian Relation', 'Local Guardian Address', 'Local Guardian Phone'
+            'Local Guardian Relation', 'Local Guardian Address', 'Local Guardian Phone',
+            'Local Guardian Email'
         ];
         
         const hostelRows = hostelStudents.map((row, index) => ({
@@ -564,7 +566,8 @@ router.get('/export-students', isAdmin, async (req, res) => {
             'Local Guardian Name': row.hostelGuardianName || row.hostel_guardian_name || '',
             'Local Guardian Relation': row.hostelGuardianRelation || row.hostel_guardian_relation || '',
             'Local Guardian Address': row.hostelGuardianAddress || row.hostel_guardian_address || '',
-            'Local Guardian Phone': row.hostelGuardianPhone || row.hostel_guardian_phone || ''
+            'Local Guardian Phone': row.hostelGuardianPhone || row.hostel_guardian_phone || '',
+            'Local Guardian Email': row.hostelGuardianEmail || row.hostel_guardian_email || ''
         }));
 
         const hostelWorksheet = XLSX.utils.json_to_sheet(hostelRows, { header: hostelHeaders });
