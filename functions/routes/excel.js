@@ -539,7 +539,10 @@ router.get('/export-students', isAdmin, async (req, res) => {
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Registered Students');
 
         // Create Hostel sheet
-        const hostelStudents = students.filter(row => row.avail_hostel && row.avail_hostel.toLowerCase() === 'yes');
+        const hostelStudents = students.filter(row => {
+            const val = row.availHostel || row.avail_hostel;
+            return val && val.toLowerCase() === 'yes';
+        });
         const hostelHeaders = [
             'S.No.', 'Admission Number', 'Student Name', 'Course', 'Specialization',
             'Hostel Age', 'Marital Status', 'Stayed in Hostel Before',
@@ -553,15 +556,15 @@ router.get('/export-students', isAdmin, async (req, res) => {
             'Student Name': row.student_name || '',
             'Course': row.course || '',
             'Specialization': row.specialization || '',
-            'Hostel Age': row.hostel_age || '',
-            'Marital Status': row.hostel_marital_status || '',
-            'Stayed in Hostel Before': row.hostel_stayed_before || '',
-            'Medical History': row.hostel_medical_history || '',
-            'Medical Details': row.hostel_medical_details || '',
-            'Local Guardian Name': row.hostel_guardian_name || '',
-            'Local Guardian Relation': row.hostel_guardian_relation || '',
-            'Local Guardian Address': row.hostel_guardian_address || '',
-            'Local Guardian Phone': row.hostel_guardian_phone || ''
+            'Hostel Age': row.hostelAge || row.hostel_age || '',
+            'Marital Status': row.hostelMaritalStatus || row.hostel_marital_status || '',
+            'Stayed in Hostel Before': row.hostelStayedBefore || row.hostel_stayed_before || '',
+            'Medical History': row.hostelMedicalHistory || row.hostel_medical_history || '',
+            'Medical Details': row.hostelMedicalDetails || row.hostel_medical_details || '',
+            'Local Guardian Name': row.hostelGuardianName || row.hostel_guardian_name || '',
+            'Local Guardian Relation': row.hostelGuardianRelation || row.hostel_guardian_relation || '',
+            'Local Guardian Address': row.hostelGuardianAddress || row.hostel_guardian_address || '',
+            'Local Guardian Phone': row.hostelGuardianPhone || row.hostel_guardian_phone || ''
         }));
 
         const hostelWorksheet = XLSX.utils.json_to_sheet(hostelRows, { header: hostelHeaders });
@@ -569,7 +572,10 @@ router.get('/export-students', isAdmin, async (req, res) => {
         XLSX.utils.book_append_sheet(workbook, hostelWorksheet, 'Hostel Details');
 
         // Create Transport sheet
-        const transportStudents = students.filter(row => row.avail_transport && row.avail_transport.toLowerCase() === 'yes');
+        const transportStudents = students.filter(row => {
+            const val = row.availTransport || row.avail_transport;
+            return val && val.toLowerCase() === 'yes';
+        });
         const transportHeaders = [
             'S.No.', 'Admission Number', 'Student Name', 'Course', 'Specialization',
             'Alternate Mobile', 'Residential Address', 'Area/Locality', 'PIN Code',
@@ -584,18 +590,18 @@ router.get('/export-students', isAdmin, async (req, res) => {
             'Student Name': row.student_name || '',
             'Course': row.course || '',
             'Specialization': row.specialization || '',
-            'Alternate Mobile': row.transport_alt_mobile || '',
-            'Residential Address': row.transport_address || '',
-            'Area/Locality': row.transport_area || '',
-            'PIN Code': row.transport_pincode || '',
-            'Google Maps Link': row.transport_gmaps_link || '',
-            'Pickup Point': row.transport_pickup_point || '',
-            'Suggested Pickup Point': row.transport_suggested_pickup || '',
-            'Distance from Home': row.transport_distance || '',
-            'Nearest Landmark': row.transport_landmark || '',
-            'Expected Transport Area': row.transport_expected_area || '',
-            'Other Students Near': row.transport_other_students || '',
-            'Approx Students': row.transport_approx_students || ''
+            'Alternate Mobile': row.transportAltMobile || row.transport_alt_mobile || '',
+            'Residential Address': row.transportAddress || row.transport_address || '',
+            'Area/Locality': row.transportArea || row.transport_area || '',
+            'PIN Code': row.transportPincode || row.transport_pincode || '',
+            'Google Maps Link': row.transportGmapsLink || row.transport_gmaps_link || '',
+            'Pickup Point': row.transportPickupPoint || row.transport_pickup_point || '',
+            'Suggested Pickup Point': row.transportSuggestedPickup || row.transport_suggested_pickup || '',
+            'Distance from Home': row.transportDistance || row.transport_distance || '',
+            'Nearest Landmark': row.transportLandmark || row.transport_landmark || '',
+            'Expected Transport Area': row.transportExpectedArea || row.transport_expected_area || '',
+            'Other Students Near': row.transportOtherStudents || row.transport_other_students || '',
+            'Approx Students': row.transportApproxStudents || row.transport_approx_students || ''
         }));
 
         const transportWorksheet = XLSX.utils.json_to_sheet(transportRows, { header: transportHeaders });
