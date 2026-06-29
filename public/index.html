@@ -128,6 +128,18 @@
 
     <script src="/js/auth.js"></script>
     <script>
+        function togglePasswordVisibility(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                iconElement.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                iconElement.textContent = '👁️';
+            }
+        }
+    </script>
+    <script>
         const slides = document.querySelectorAll('.bg-slideshow .slide');
         let current = 0;
         setInterval(() => {
