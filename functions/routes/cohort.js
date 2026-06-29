@@ -92,7 +92,7 @@ router.get('/student/:id', isCohortLeader, async (req, res) => {
                 father_name: sd.father_name,
                 mother_name: sd.mother_name,
                 form_status: sd.status,
-                avail_hostel: sd.avail_hostel,
+                avail_hostel: sd.availHostel || sd.avail_hostel,
                 cohort_approval: a.cohort_approval,
                 final_approval: a.final_approval,
                 cohort_comments: a.cohort_comments,
