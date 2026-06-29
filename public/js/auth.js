@@ -181,3 +181,16 @@ window.addEventListener('DOMContentLoaded', async () => {
         // Not logged in — stay on login page
     }
 });
+
+// ── TOGGLE PASSWORD VISIBILITY ────────────────────────────
+function togglePasswordVisibility(inputId, iconElement) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        // Eye icon with a slash or closed eye (you can use whatever emoji or text)
+        iconElement.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        iconElement.textContent = '👁️';
+    }
+}
