@@ -279,7 +279,7 @@ async function viewStudent(studentId) {
                     <span class="badge ${s.form_status === 'submitted' ? 'badge-verified' : 'badge-pending'}">${s.form_status === 'submitted' ? '🔒 Locked & Complete' : '⏳ Draft / Editing'}</span>
                 </div>
                 <div><label style="font-size:12px;color:#888;display:block;">Hostel Accommodation</label>
-                    <span class="badge ${s.avail_hostel === 'yes' ? 'badge-verified' : 'badge-pending'}">${s.avail_hostel === 'yes' ? '🏠 Yes (Annexure A & B)' : 'No (Standard Forms)'}</span>
+                    <span class="badge ${(s.availHostel || s.avail_hostel) === 'yes' ? 'badge-verified' : 'badge-pending'}">${(s.availHostel || s.avail_hostel) === 'yes' ? '🏠 Yes (Annexure A & B)' : 'No (Standard Forms)'}</span>
                 </div>
                 <div><label style="font-size:12px;color:#888;display:block;">Unlock Request Status</label>
                     <span class="badge ${s.cohort_approval === 'edit_requested' ? 'badge-danger' : 'badge-approved'}">
