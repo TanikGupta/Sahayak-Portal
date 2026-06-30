@@ -195,7 +195,7 @@
                 
                 <div class="card">
                     <div class="alert alert-danger" style="border: 2px solid #ea580c; background: #fff7ed; color: #c2410c; padding: 14px 18px; border-radius: 8px; font-weight: 700; font-size: 13.5px; margin-bottom: 16px; line-height: 1.45;">
-                        ⚠️ IMPORTANT NOTICE: Please fill all the details carefully and correctly. Make sure all your details match your official documents (10th/12th Marksheets, Aadhaar, etc.). Only your Mobile Number and Email Address are strictly compulsory to submit the profile. Once submitted, your profile will be locked, and you will not be able to edit it.
+                        ⚠️ IMPORTANT NOTICE: Please fill all the details carefully and correctly. Make sure all your details match your official documents (10th/12th Marksheets, Aadhaar, etc.). Once submitted, your profile will be locked, and you will not be able to edit it.
                     </div>
                     <h3>👤 My Profile</h3>
                     <div class="alert alert-info">Your basic details are pre-filled from admission records. Fill in the remaining fields.</div>
@@ -203,7 +203,7 @@
                     <div class="section-divider">Personal Information</div>
                     <div class="field-row-3">
                         <div class="form-group"><label>First Name <span style="color: #c0392b;">*</span></label><input type="text" id="firstName" placeholder="First name" /></div>
-                        <div class="form-group"><label>Middle Name <span style="color: #c0392b;">*</span></label><input type="text" id="middleName" placeholder="Middle name" /></div>
+                        <div class="form-group"><label>Middle Name</label><input type="text" id="middleName" placeholder="Middle name" /></div>
                         <div class="form-group"><label>Last Name <span style="color: #c0392b;">*</span></label><input type="text" id="lastName" placeholder="Last name" /></div>
                     </div>
                     <div class="field-row">
@@ -1408,7 +1408,7 @@ function updateProfileLock() {
 
     // All editable profile field IDs
     const editableFields = [
-        'firstName','middleName','lastName','dob','bloodGroup','gender',
+        'firstName','lastName','dob','bloodGroup','gender',
         'category','phone','email','apaarId',
         'fatherName','motherName','fatherOccupation','fatherDesignation','fatherCompany',
         'motherOccupation','motherDesignation','motherCompany','fatherPhone','fatherLandline','fatherEmail','motherPhone','motherEmail',
@@ -1540,7 +1540,7 @@ function handleLockProfile() {
     }
 
     const requiredFields = [
-        'firstName', 'middleName', 'lastName', 'dob', 'gender', 'category', 'apaarId', 'aadharCard',
+        'firstName', 'lastName', 'dob', 'gender', 'category', 'apaarId', 'aadharCard',
         'phone', 'email', 'fatherEmail',
         'bloodGroup', 'fatherName', 'motherName', 'fatherPhone',
         'permanentAddress', 'permanentCity', 'permanentDistrict', 'permanentState',
