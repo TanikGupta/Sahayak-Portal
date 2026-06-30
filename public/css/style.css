@@ -225,7 +225,7 @@ h2 {
 }
 /* Sidebar */
 .sidebar {
-    width: 260px;
+    width: 18%;
     background: linear-gradient(180deg, #1A3A6B 0%, #2E5FA3 100%);
     padding: 0;
     position: fixed;
@@ -295,11 +295,11 @@ h2 {
 
 /* Main Content */
 .main-content {
-    margin-left: 260px;
+    margin-left: 18%;
     flex: 1;
     padding: 0;
     min-height: 100vh;
-    width: calc(100% - 260px);
+    width: 82%;
     overflow-y: auto;
 }
 
