@@ -65,14 +65,6 @@ router.post('/upload', isAdmin, uploadSingleExcel, async (req, res) => {
     try {
         // Read Excel file
         const workbook = XLSX.readFile(req.file.path);
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet);
-
-        if (rows.length === 0) {
-            fs.unlinkSync(req.file.path);
-            return res.json({ success: false, message: 'Excel file is empty.' });
-        }
 
         let inserted = 0;
         let updated = 0;
@@ -92,120 +84,137 @@ router.post('/upload', isAdmin, uploadSingleExcel, async (req, res) => {
             console.error('Failed to pre-fetch cohort leaders:', e);
         }
 
-        for (let index = 0; index < rows.length; index++) {
-            const row = rows[index];
+        for (const sheetName of workbook.SheetNames) {
+            const sheet = workbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(sheet);
 
-            // Map Excel columns to database fields
-            const name = row['Name'] || row['Student Name'] || row['STUDENT NAME'] || row['name'] || '';
-            const admissionNumber = String(row['Admission Number'] || row['Admission No'] || row['ADM NO'] || row['admission_number'] || row['Enrollment No'] || '').trim();
-            const course = row['Course'] || row['Programme'] || row['COURSE'] || row['course'] || '';
-            const firstName = row['First Name'] || row['FIRST NAME'] || '';
-            const middleName = row['Middle Name'] || row['MIDDLE NAME'] || '';
-            const lastName = row['Last Name'] || row['LAST NAME'] || row['Surname'] || '';
-            const dob = row['Date of Birth'] || row['DOB'] || row['dob'] || null;
-            const gender = row['Gender'] || row['GENDER'] || '';
-            const category = row['Category'] || row['CATEGORY'] || '';
-            const phone = String(row['Phone'] || row['Mobile'] || row['Contact No'] || row['PHONE'] || '');
-            const email = row['Email'] || row['EMAIL'] || row['Email ID'] || '';
-            const fatherName = row["Father's Name"] || row['FATHER NAME'] || row['Father Name'] || '';
-            const motherName = row["Mother's Name"] || row['MOTHER NAME'] || row['Mother Name'] || '';
-            const bloodGroup = row['Blood Group'] || row['BLOOD GROUP'] || '';
-            const specialization = row['Specialization'] || row['Branch'] || row['BRANCH'] || '';
-            const academicYear = row['Academic Year'] || row['ACADEMIC YEAR'] || '2026';
+            for (let index = 0; index < rows.length; index++) {
+                const row = rows[index];
 
-            const pct12th = row['12th Percentage'] || row['12th %'] || row['Class 12 Percentage'] || row['12th percentage'] || '';
-            const jeeScore = row['JEE Main Score'] || row['JEE Main Score (Percentile)'] || row['JEE Score'] || row['JEE Percentile'] || row['JEE Main Percentile'] || '';
-            let prevQual = '';
-            if (pct12th || jeeScore) {
-                prevQual = `12th: ${pct12th} | JEE: ${jeeScore}`;
-            } else {
-                prevQual = row['Previous Qualification'] || row['previous_qualification'] || '';
-            }
+                // Map Excel columns to database fields
+                const name = row['Name'] || row['Student Name'] || row['STUDENT NAME'] || row['name'] || '';
+                const admissionNumber = String(row['Application Number'] || row['application number'] || row['Admission Number'] || row['Admission No'] || row['ADM NO'] || row['admission_number'] || row['Enrollment No'] || '').trim();
+                const course = row['Course'] || row['Programme'] || row['COURSE'] || row['course'] || sheetName || '';
+                const firstName = row['First Name'] || row['FIRST NAME'] || '';
+                const middleName = row['Middle Name'] || row['MIDDLE NAME'] || '';
+                const lastName = row['Last Name'] || row['LAST NAME'] || row['Surname'] || '';
+                const dob = row['Date of Birth'] || row['DOB'] || row['dob'] || null;
+                const gender = row['Gender'] || row['GENDER'] || '';
+                const category = row['Category'] || row['CATEGORY'] || '';
+                const phone = String(row['Phone'] || row['Mobile'] || row['Contact No'] || row['PHONE'] || '');
+                const email = row['Email'] || row['EMAIL'] || row['Email ID'] || '';
+                const fatherName = row["Father's Name"] || row['FATHER NAME'] || row['Father Name'] || '';
+                const motherName = row["Mother's Name"] || row['MOTHER NAME'] || row['Mother Name'] || '';
+                const bloodGroup = row['Blood Group'] || row['BLOOD GROUP'] || '';
+                const specialization = row['Specialization / Branch'] || row['Specialization'] || row['Branch'] || row['BRANCH'] || '';
+                const academicYear = row['Academic Year'] || row['ACADEMIC YEAR'] || '2026';
 
-            if (!admissionNumber) {
-                errors.push(`Row ${index + 2}: Missing admission number`);
-                continue;
-            }
-
-            // Full name fallback
-            const fullName = name || [firstName, middleName, lastName].filter(Boolean).join(' ');
-
-            if (!fullName) {
-                errors.push(`Row ${index + 2}: Missing student name`);
-                continue;
-            }
-
-            const fields = {
-                first_name: firstName || null,
-                middle_name: middleName || null,
-                last_name: lastName || null,
-                date_of_birth: dob || null,
-                gender: gender || null,
-                category: category || null,
-                phone: phone || null,
-                email: email || null,
-                father_name: fatherName || null,
-                mother_name: motherName || null,
-                blood_group: bloodGroup || null,
-                specialization: specialization || null,
-                academic_year: academicYear || null,
-                previous_qualification: prevQual || null
-            };
-
-            const cohortCode = String(row['Cohort Code'] || row['COHORT CODE'] || row['cohort_code'] || '').trim().toUpperCase();
-            let cohortLeaderId = null;
-            if (cohortCode && cohortLeadersMap.has(cohortCode)) {
-                cohortLeaderId = cohortLeadersMap.get(cohortCode);
-            }
-
-            // Remove nulls to avoid overwriting existing data with empty values
-            Object.keys(fields).forEach(key => fields[key] === null && delete fields[key]);
-
-            try {
-                // Check if user already exists
-                const snapshot = await db.collection('users').where('admission_number', '==', admissionNumber).get();
-
-                if (!snapshot.empty) {
-                    const doc = snapshot.docs[0];
-                    const existingData = doc.data();
-                    const currentDetails = existingData.details || {};
-                    
-                    const newDetails = { ...currentDetails, ...fields };
-                    
-                    const updateData = {
-                        name: fullName,
-                        course: course,
-                        details: newDetails
-                    };
-                    if (cohortLeaderId) {
-                        updateData.cohort_leader_id = cohortLeaderId;
-                    }
-
-                    await db.collection('users').doc(doc.id).update(updateData);
-                    updated++;
+                const pct12th = row['12th Percentage'] || row['12th %'] || row['Class 12 Percentage'] || row['12th percentage'] || '';
+                const jeeScore = row['JEE Score'] || row['JEE Main Score'] || row['JEE Main Score (Percentile)'] || row['JEE Percentile'] || row['JEE Main Percentile'] || '';
+                const cuetScore = row['CUET Score'] || row['cuet score'] || '';
+                const detScore = row['DET Score'] || row['det score'] || '';
+                
+                let prevQual = '';
+                if (pct12th || jeeScore || cuetScore || detScore) {
+                    let quals = [];
+                    if (pct12th) quals.push(`12th: ${pct12th}`);
+                    if (jeeScore) quals.push(`JEE: ${jeeScore}`);
+                    if (cuetScore) quals.push(`CUET: ${cuetScore}`);
+                    if (detScore) quals.push(`DET: ${detScore}`);
+                    prevQual = quals.join(' | ');
                 } else {
-                    // Insert new user
-                    const newStudentData = {
-                        name: fullName,
-                        admission_number: admissionNumber,
-                        course: course,
-                        role: 'student',
-                        details: fields
-                    };
-                    if (cohortLeaderId) {
-                        newStudentData.cohort_leader_id = cohortLeaderId;
-                    }
-
-                    await db.collection('users').add(newStudentData);
-                    inserted++;
+                    prevQual = row['Previous Qualification'] || row['previous_qualification'] || '';
                 }
-            } catch (err) {
-                errors.push(`Row ${index + 2}: Database error - ${err.message}`);
+
+                if (!admissionNumber) {
+                    errors.push(`Sheet ${sheetName} Row ${index + 2}: Missing application number`);
+                    continue;
+                }
+
+                // Full name fallback
+                const fullName = name || [firstName, middleName, lastName].filter(Boolean).join(' ');
+
+                if (!fullName) {
+                    errors.push(`Sheet ${sheetName} Row ${index + 2}: Missing student name`);
+                    continue;
+                }
+
+                const fields = {
+                    first_name: firstName || null,
+                    middle_name: middleName || null,
+                    last_name: lastName || null,
+                    date_of_birth: dob || null,
+                    gender: gender || null,
+                    category: category || null,
+                    phone: phone || null,
+                    email: email || null,
+                    father_name: fatherName || null,
+                    mother_name: motherName || null,
+                    blood_group: bloodGroup || null,
+                    specialization: specialization || null,
+                    academic_year: academicYear || null,
+                    previous_qualification: prevQual || null
+                };
+
+                const cohortCode = String(row['Cohort Code'] || row['COHORT CODE'] || row['cohort_code'] || '').trim().toUpperCase();
+                let cohortLeaderId = null;
+                if (cohortCode && cohortLeadersMap.has(cohortCode)) {
+                    cohortLeaderId = cohortLeadersMap.get(cohortCode);
+                }
+
+                // Remove nulls to avoid overwriting existing data with empty values
+                Object.keys(fields).forEach(key => fields[key] === null && delete fields[key]);
+
+                try {
+                    // Check if user already exists
+                    const snapshot = await db.collection('users').where('admission_number', '==', admissionNumber).get();
+
+                    if (!snapshot.empty) {
+                        const doc = snapshot.docs[0];
+                        const existingData = doc.data();
+                        const currentDetails = existingData.details || {};
+                        
+                        const newDetails = { ...currentDetails, ...fields };
+                        
+                        const updateData = {
+                            name: fullName,
+                            course: course,
+                            details: newDetails
+                        };
+                        if (cohortLeaderId) {
+                            updateData.cohort_leader_id = cohortLeaderId;
+                        }
+
+                        await db.collection('users').doc(doc.id).update(updateData);
+                        updated++;
+                    } else {
+                        // Insert new user
+                        const newStudentData = {
+                            name: fullName,
+                            admission_number: admissionNumber,
+                            course: course,
+                            role: 'student',
+                            details: fields
+                        };
+                        if (cohortLeaderId) {
+                            newStudentData.cohort_leader_id = cohortLeaderId;
+                        }
+
+                        await db.collection('users').add(newStudentData);
+                        inserted++;
+                    }
+                } catch (err) {
+                    errors.push(`Sheet ${sheetName} Row ${index + 2}: Database error - ${err.message}`);
+                }
             }
         }
 
         fs.unlinkSync(req.file.path);
         
+        if (inserted === 0 && updated === 0 && errors.length === 0) {
+            return res.json({ success: false, message: 'Excel file is empty or no valid rows found.' });
+        }
+
         res.json({
             success: true,
             message: `Done! ${inserted} students added, ${updated} updated.`,
@@ -227,19 +236,29 @@ router.post('/preview', isAdmin, uploadSingleExcel, (req, res) => {
 
     try {
         const workbook = XLSX.readFile(req.file.path);
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet);
+        
+        let totalRows = 0;
+        let columns = [];
+        let preview = [];
 
-        // Return first 5 rows as preview + column names
-        const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
-        const preview = rows.slice(0, 5);
+        for (const sheetName of workbook.SheetNames) {
+            const sheet = workbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(sheet);
+            totalRows += rows.length;
+
+            if (rows.length > 0 && columns.length === 0) {
+                columns = Object.keys(rows[0]);
+            }
+            if (preview.length < 5) {
+                preview = preview.concat(rows.slice(0, 5 - preview.length));
+            }
+        }
 
         fs.unlinkSync(req.file.path);
 
         res.json({
             success: true,
-            totalRows: rows.length,
+            totalRows: totalRows,
             columns,
             preview,
             filename: req.file.originalname
@@ -252,59 +271,41 @@ router.post('/preview', isAdmin, uploadSingleExcel, (req, res) => {
 
 // DOWNLOAD SAMPLE EXCEL TEMPLATE
 router.get('/template', isAdmin, (req, res) => {
-    const data = [
-        {
-            'Admission Number': '2025001',
-            'Name': 'John Kumar Sharma',
-            'First Name': 'John',
-            'Middle Name': 'Kumar',
-            'Last Name': 'Sharma',
-            'Course': 'BTECH',
-            'Specialization': 'Computer Science',
-            'Academic Year': '2025-26',
-            'Date of Birth': '2005-06-15',
-            'Gender': 'Male',
-            'Category': 'General',
-            'Phone': '9876543210',
-            'Email': 'john@example.com',
-            "Father's Name": 'Ramesh Sharma',
-            "Mother's Name": 'Sunita Sharma',
-            '12th Percentage': '85%',
-            'JEE Main Score (Percentile)': '98.5'
-        },
-        {
-            'Admission Number': '2025002',
-            'Name': 'Priya Singh',
-            'First Name': 'Priya',
-            'Middle Name': '',
-            'Last Name': 'Singh',
-            'Course': 'BBA',
-            'Specialization': '',
-            'Academic Year': '2025-26',
-            'Date of Birth': '2005-03-22',
-            'Gender': 'Female',
-            'Category': 'OBC',
-            'Phone': '9876543211',
-            'Email': 'priya@example.com',
-            "Father's Name": 'Vikram Singh',
-            "Mother's Name": 'Meera Singh',
-            '12th Percentage': '78%',
-            'JEE Main Score (Percentile)': '92.1'
-        }
-    ];
-
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(data);
 
-    // Set column widths
-    worksheet['!cols'] = [
-        {wch:16},{wch:22},{wch:14},{wch:14},{wch:14},
-        {wch:10},{wch:20},{wch:12},{wch:14},{wch:10},
-        {wch:12},{wch:14},{wch:24},{wch:12},{wch:22},{wch:22},
-        {wch:18},{wch:28}
+    const cols = [
+        {wch:8}, // Sno
+        {wch:25}, // Name
+        {wch:20}, // Application Number
+        {wch:25}, // Specialization / Branch
+        {wch:18}, // 12th Percentage
+        {wch:15}, // Score
     ];
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+    const btechData = [{
+        'Sno': 1, 'Name': 'John Kumar Sharma', 'Application Number': '2025001',
+        'Specialization / Branch': 'Computer Science', '12th Percentage': '85%', 'JEE Score': '98.5'
+    }];
+    const btechSheet = XLSX.utils.json_to_sheet(btechData);
+    btechSheet['!cols'] = cols;
+    XLSX.utils.book_append_sheet(workbook, btechSheet, 'BTECH');
+
+    const bbaData = [{
+        'Sno': 1, 'Name': 'Priya Singh', 'Application Number': '2025002',
+        'Specialization / Branch': 'Marketing', '12th Percentage': '78%', 'CUET Score': '210'
+    }];
+    const bbaSheet = XLSX.utils.json_to_sheet(bbaData);
+    bbaSheet['!cols'] = cols;
+    XLSX.utils.book_append_sheet(workbook, bbaSheet, 'BBA');
+
+    const bdesData = [{
+        'Sno': 1, 'Name': 'Rahul Verma', 'Application Number': '2025003',
+        'Specialization / Branch': 'Product Design', '12th Percentage': '82%', 'DET Score': '55'
+    }];
+    const bdesSheet = XLSX.utils.json_to_sheet(bdesData);
+    bdesSheet['!cols'] = cols;
+    XLSX.utils.book_append_sheet(workbook, bdesSheet, 'BDES');
+
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
     res.setHeader('Content-Disposition', 'attachment; filename=JKLU_Student_Import_Template.xlsx');
