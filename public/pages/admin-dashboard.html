@@ -382,6 +382,31 @@
                     <div id="importResults" style="display:none;" class="alert alert-success"></div>
                 </div>
 
+                <!-- EXCEL LOGS -->
+                <div class="card" style="margin-top:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3>📋 Import History (Audit Logs)</h3>
+                        <button class="btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="loadExcelLogs()">🔄 Refresh Logs</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date &amp; Time</th>
+                                    <th>Admin Name</th>
+                                    <th>File Name</th>
+                                    <th>Inserted</th>
+                                    <th>Updated</th>
+                                    <th>Errors</th>
+                                </tr>
+                            </thead>
+                            <tbody id="excelLogsTableBody">
+                                <tr><td colspan="6" style="text-align:center;">Loading logs...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div class="card" style="margin-top:20px;">
                     <h3>👨‍🎓 All Registered Students</h3>
                     <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center;">
@@ -1234,6 +1259,7 @@ async function importExcel() {
             ${data.errors && data.errors.length > 0 ? `<br>⚠️ Errors (${data.errors.length}):<br>${data.errors.map(e => `• ${e}`).join('<br>')}` : ''}`;
         msgDiv.textContent = '';
         loadExcelStudents();
+        loadExcelLogs();
         loadStats();
     } else {
         msgDiv.style.color = '#c0392b';
@@ -1314,8 +1340,39 @@ function showSection(name, el) {
     if (name === 'students') renderStudents();
     if (name === 'cohortLeaders') renderCohortLeaders();
     if (name === 'assign') { renderAssignDropdowns(); renderAssignmentsList(); }
-    if (name === 'excel') loadExcelStudents();
+    if (name === 'excel') { loadExcelStudents(); loadExcelLogs(); }
     document.querySelector('.page-content').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function loadExcelLogs() {
+    const tbody = document.getElementById('excelLogsTableBody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Loading logs...</td></tr>';
+    
+    try {
+        const res = await fetch('/api/excel/logs');
+        const data = await res.json();
+        
+        if (!data.success || !data.logs || data.logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">No import logs found.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        data.logs.forEach(log => {
+            const dateStr = new Date(log.timestamp).toLocaleString();
+            html += `<tr>
+                <td>${dateStr}</td>
+                <td><strong>${log.admin_name || 'Admin'}</strong></td>
+                <td>${log.filename}</td>
+                <td><span class="badge badge-verified">${log.inserted}</span></td>
+                <td><span class="badge badge-review">${log.updated}</span></td>
+                <td>${log.errors > 0 ? `<span class="badge badge-pending" style="background:#fcebea;color:#c0392b;">${log.errors}</span>` : '0'}</td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+    } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#c0392b;">Error loading logs.</td></tr>';
+    }
 }
 
 async function handleLogout() {

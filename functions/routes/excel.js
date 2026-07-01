@@ -215,6 +215,20 @@ router.post('/upload', isAdmin, uploadSingleExcel, async (req, res) => {
             return res.json({ success: false, message: 'Excel file is empty or no valid rows found.' });
         }
 
+        try {
+            await db.collection('excel_logs').add({
+                timestamp: new Date().toISOString(),
+                filename: req.file.originalname,
+                admin_name: req.session.user ? req.session.user.name : 'Unknown Admin',
+                admin_id: req.session.user ? req.session.user.id : 'unknown',
+                inserted: inserted,
+                updated: updated,
+                errors: errors.length
+            });
+        } catch (logErr) {
+            console.error('Failed to save excel log:', logErr);
+        }
+
         res.json({
             success: true,
             message: `Done! ${inserted} students added, ${updated} updated.`,
@@ -625,6 +639,25 @@ router.get('/export-students', isAdmin, async (req, res) => {
     } catch (err) {
         console.error('Export students query error:', err);
         return res.status(500).json({ success: false, message: 'Database error: ' + err.message });
+    }
+});
+// GET EXCEL IMPORT LOGS
+router.get('/logs', isAdmin, async (req, res) => {
+    try {
+        const snapshot = await db.collection('excel_logs')
+            .orderBy('timestamp', 'desc')
+            .limit(50)
+            .get();
+
+        const logs = [];
+        snapshot.forEach(doc => {
+            logs.push({ id: doc.id, ...doc.data() });
+        });
+
+        res.json({ success: true, logs });
+    } catch (err) {
+        console.error('Error fetching excel logs:', err);
+        res.json({ success: false, message: 'Database error: ' + err.message });
     }
 });
 
