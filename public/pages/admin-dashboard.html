@@ -357,9 +357,14 @@
 
                     <div style="background:#f0f4f8; padding:16px; border-radius:8px; margin-bottom:20px;">
                         <h4 style="color:#1A3A6B; margin-bottom:12px;">📤 Step 2 — Upload Excel File</h4>
-                        <div class="form-group">
-                            <label>Select Excel File (.xlsx or .xls)</label>
-                            <input type="file" id="excelFile" accept=".xlsx,.xls" onchange="previewExcel()" />
+                        <div class="form-group" style="display:flex; align-items:flex-end; gap:12px; margin-bottom:0;">
+                            <div style="flex:1;">
+                                <label>Select Excel File (.xlsx or .xls)</label>
+                                <input type="file" id="excelFile" accept=".xlsx,.xls" />
+                            </div>
+                            <button class="btn-primary" style="padding:10px 20px; white-space:nowrap; height:42px;" onclick="previewExcel()">
+                                👁️ Preview &amp; Import
+                            </button>
                         </div>
                     </div>
 
