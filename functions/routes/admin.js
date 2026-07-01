@@ -314,4 +314,138 @@ router.delete('/cohort-leader/:id', isAdmin, async (req, res) => {
     }
 });
 
+// ── AARAMBH COHORT SYNC ──────────────────────────────────────────
+
+// Preview Aarambh Sync
+router.post('/preview-aarambh-sync', isAdmin, async (req, res) => {
+    try {
+        const response = await fetch('https://admin-aarambh-team.vercel.app/api/public/student-cohorts?secret=aarambh2026read');
+        const data = await response.json();
+        
+        if (!data.success || !data.students) {
+            return res.json({ success: false, message: 'Failed to fetch data from external API.' });
+        }
+        
+        const externalStudents = data.students;
+        
+        // Fetch all cohort leaders from our DB
+        const clSnap = await db.collection('users').where('role', '==', 'cohort_leader').get();
+        const cohortLeadersMap = {};
+        clSnap.docs.forEach(doc => {
+            const clData = doc.data();
+            if (clData.cohort_code) {
+                cohortLeadersMap[clData.cohort_code.toUpperCase()] = {
+                    id: doc.id,
+                    name: clData.name
+                };
+            }
+        });
+        
+        // Fetch all students from our DB
+        const studentsSnap = await db.collection('users').where('role', '==', 'student').get();
+        const internalStudentsMap = {};
+        studentsSnap.docs.forEach(doc => {
+            const sData = doc.data();
+            if (sData.admission_number) {
+                internalStudentsMap[sData.admission_number.toUpperCase()] = { id: doc.id, ...sData };
+            }
+        });
+        
+        const matched = [];
+        const unmatchedExternal = [];
+        const externalAppNos = new Set();
+        
+        externalStudents.forEach(extS => {
+            if (!extS.applicationNo) return;
+            const appNo = extS.applicationNo.toUpperCase();
+            externalAppNos.add(appNo);
+            
+            if (internalStudentsMap[appNo]) {
+                const internalS = internalStudentsMap[appNo];
+                const newCohortCode = (extS.cohort || '').toUpperCase();
+                const matchedLeader = cohortLeadersMap[newCohortCode];
+                matched.push({
+                    id: internalS.id,
+                    applicationNo: appNo,
+                    name: internalS.name || extS.name,
+                    oldCohortCode: internalS.cohort_code || 'None',
+                    newCohortCode: newCohortCode,
+                    cohortLeaderId: matchedLeader ? matchedLeader.id : null,
+                    cohortLeaderName: matchedLeader ? matchedLeader.name : 'No Leader Found'
+                });
+            } else {
+                unmatchedExternal.push(extS);
+            }
+        });
+        
+        const unmatchedInternal = [];
+        for (const [appNo, internalS] of Object.entries(internalStudentsMap)) {
+            if (!externalAppNos.has(appNo)) {
+                unmatchedInternal.push({
+                    applicationNo: appNo,
+                    name: internalS.name,
+                    course: internalS.course
+                });
+            }
+        }
+        
+        res.json({
+            success: true,
+            matched,
+            unmatchedExternal,
+            unmatchedInternal
+        });
+        
+    } catch (error) {
+        console.error('Preview sync error:', error);
+        res.json({ success: false, message: 'Server error during preview.' });
+    }
+});
+
+// Execute Aarambh Sync
+router.post('/sync-aarambh-cohorts', isAdmin, async (req, res) => {
+    try {
+        const { matched } = req.body;
+        if (!matched || !Array.isArray(matched)) {
+            return res.json({ success: false, message: 'Invalid data provided for sync.' });
+        }
+        
+        const batch = db.batch();
+        let updateCount = 0;
+        
+        for (const s of matched) {
+            const studentRef = db.collection('users').doc(s.id);
+            const updateData = {
+                cohort_code: s.newCohortCode
+            };
+            if (s.cohortLeaderId) {
+                updateData.cohort_leader_id = s.cohortLeaderId;
+            } else {
+                updateData.cohort_leader_id = null;
+            }
+            batch.update(studentRef, updateData);
+            updateCount++;
+            
+            // Note: We might also want to update messages, but usually sync happens early.
+            // If we need to move existing messages, we'd have to do it, but for 100s of students
+            // a single batch might hit limits. Let's just update the student profile for now.
+        }
+        
+        if (updateCount > 0) {
+            // Firestore batch has a limit of 500 operations.
+            if (updateCount > 490) {
+                // If more than 500, we should split batches, but we assume < 500 for now.
+                // There are only 170 total students, so one batch is fine.
+            }
+            await batch.commit();
+        }
+        
+        res.json({ success: true, message: `Successfully synced ${updateCount} students.` });
+        
+    } catch (error) {
+        console.error('Sync error:', error);
+        res.json({ success: false, message: 'Server error during sync.' });
+    }
+});
+
 module.exports = router;

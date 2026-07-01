@@ -240,6 +240,10 @@
                         style="flex:1; padding:11px; border:none; background:#f0f4f8; color:#666; font-size:13px; font-weight:600; cursor:pointer;">
                         📊 Bulk via Excel
                     </button>
+                    <button id="assignTabAarambh" onclick="switchAssignTab('aarambh')"
+                        style="flex:1; padding:11px; border:none; background:#f0f4f8; color:#666; font-size:13px; font-weight:600; cursor:pointer;">
+                        🔄 Aarambh Sync
+                    </button>
                 </div>
 
                 <!-- Manual Tab -->
@@ -320,6 +324,43 @@
                         </div>
 
                         <div id="cohortAssignResults" style="display:none;" class="alert alert-success"></div>
+                    </div>
+                </div>
+
+                <!-- Aarambh Sync Tab -->
+                <div id="assignAarambhTab" style="display:none;">
+                    <div class="card">
+                        <h3>🔄 Aarambh Database Sync</h3>
+                        <p style="color:#666; font-size:13px; margin-bottom:16px;">
+                            Automatically assign cohorts by pulling live data from the Aarambh external database. First, find connections to preview the changes.
+                        </p>
+                        
+                        <button id="btnAarambhPreview" class="btn-primary" style="width:auto; padding:10px 28px; margin-bottom:20px; background:#2980b9;" onclick="previewAarambhSync()">
+                            🔍 Find Connections
+                        </button>
+                        
+                        <div id="aarambhPreviewMsg" class="success-msg" style="margin-bottom:12px;"></div>
+                        
+                        <div id="aarambhPreviewResults" style="display:none; margin-bottom:20px;">
+                            <div style="background:#f0f4f8; padding:16px; border-radius:8px; margin-bottom:16px;">
+                                <h4 style="color:#27ae60; margin-bottom:12px;">✅ Ready to Sync (Matched) - <span id="aarambhMatchedCount">0</span></h4>
+                                <div id="aarambhMatchedList" style="max-height: 200px; overflow-y: auto; font-size: 13px;"></div>
+                            </div>
+                            
+                            <div style="background:#fff3cd; padding:16px; border-radius:8px; margin-bottom:16px;">
+                                <h4 style="color:#856404; margin-bottom:12px;">⚠️ Missing from External (In Sahayak only) - <span id="aarambhUnmatchedInternalCount">0</span></h4>
+                                <div id="aarambhUnmatchedInternalList" style="max-height: 200px; overflow-y: auto; font-size: 13px;"></div>
+                            </div>
+                            
+                            <div style="background:#f8d7da; padding:16px; border-radius:8px; margin-bottom:16px;">
+                                <h4 style="color:#721c24; margin-bottom:12px;">❌ Missing from Sahayak (In External only) - <span id="aarambhUnmatchedExternalCount">0</span></h4>
+                                <div id="aarambhUnmatchedExternalList" style="max-height: 200px; overflow-y: auto; font-size: 13px;"></div>
+                            </div>
+                            
+                            <button id="btnAarambhSync" class="btn-primary" style="width:auto; padding:10px 28px;" onclick="syncAarambhCohorts()">
+                                ✅ Sync Matched Cohorts
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -972,25 +1013,37 @@ function closeCohortDetails() {
 function switchAssignTab(tab) {
     const manualTab = document.getElementById('assignManualTab');
     const excelTab = document.getElementById('assignExcelTab');
+    const aarambhTab = document.getElementById('assignAarambhTab');
     const manualBtn = document.getElementById('assignTabManual');
     const excelBtn = document.getElementById('assignTabExcel');
+    const aarambhBtn = document.getElementById('assignTabAarambh');
+
+    // Reset all
+    manualTab.style.display = 'none';
+    excelTab.style.display = 'none';
+    aarambhTab.style.display = 'none';
+    
+    manualBtn.style.background = '#f0f4f8';
+    manualBtn.style.color = '#666';
+    excelBtn.style.background = '#f0f4f8';
+    excelBtn.style.color = '#666';
+    aarambhBtn.style.background = '#f0f4f8';
+    aarambhBtn.style.color = '#666';
 
     if (tab === 'manual') {
         manualTab.style.display = 'block';
-        excelTab.style.display = 'none';
         manualBtn.style.background = 'linear-gradient(135deg,#1A3A6B,#2E5FA3)';
         manualBtn.style.color = 'white';
-        excelBtn.style.background = '#f0f4f8';
-        excelBtn.style.color = '#666';
         renderAssignmentsList();
-    } else {
-        manualTab.style.display = 'none';
+    } else if (tab === 'excel') {
         excelTab.style.display = 'block';
         excelBtn.style.background = 'linear-gradient(135deg,#1A3A6B,#2E5FA3)';
         excelBtn.style.color = 'white';
-        manualBtn.style.background = '#f0f4f8';
-        manualBtn.style.color = '#666';
         renderCohortLeaderReference();
+    } else if (tab === 'aarambh') {
+        aarambhTab.style.display = 'block';
+        aarambhBtn.style.background = 'linear-gradient(135deg,#1A3A6B,#2E5FA3)';
+        aarambhBtn.style.color = 'white';
     }
 }
 
@@ -1570,6 +1623,121 @@ loadAdmin();
             url += '?filename=' + encodeURIComponent(filenameInput);
         }
         window.location.href = url;
+    }
+
+    let aarambhMatchedData = null;
+
+    async function previewAarambhSync() {
+        const btn = document.getElementById('btnAarambhPreview');
+        const msg = document.getElementById('aarambhPreviewMsg');
+        const resultsDiv = document.getElementById('aarambhPreviewResults');
+        
+        btn.disabled = true;
+        btn.innerText = '🔍 Fetching and Comparing...';
+        msg.innerText = '';
+        msg.className = 'success-msg';
+        resultsDiv.style.display = 'none';
+
+        try {
+            const res = await fetch('/api/admin/preview-aarambh-sync', { method: 'POST' });
+            const data = await res.json();
+            
+            if (data.success) {
+                aarambhMatchedData = data.matched;
+                
+                document.getElementById('aarambhMatchedCount').innerText = data.matched.length;
+                document.getElementById('aarambhUnmatchedInternalCount').innerText = data.unmatchedInternal.length;
+                document.getElementById('aarambhUnmatchedExternalCount').innerText = data.unmatchedExternal.length;
+                
+                let matchedHtml = '<table class="data-table" style="font-size:12px; margin-top:10px;"><thead><tr><th>App No</th><th>Name</th><th>New Cohort</th><th>Cohort Leader</th></tr></thead><tbody>';
+                data.matched.forEach(s => {
+                    matchedHtml += `<tr>
+                        <td>${s.applicationNo}</td>
+                        <td>${s.name}</td>
+                        <td><strong>${s.newCohortCode}</strong></td>
+                        <td>${s.cohortLeaderName}</td>
+                    </tr>`;
+                });
+                matchedHtml += '</tbody></table>';
+                document.getElementById('aarambhMatchedList').innerHTML = data.matched.length > 0 ? matchedHtml : '<p style="color:#666;">No matches found.</p>';
+                
+                let unmatchedIntHtml = '<table class="data-table" style="font-size:12px; margin-top:10px;"><thead><tr><th>App No</th><th>Name</th><th>Course</th></tr></thead><tbody>';
+                data.unmatchedInternal.forEach(s => {
+                    unmatchedIntHtml += `<tr>
+                        <td>${s.applicationNo}</td>
+                        <td>${s.name}</td>
+                        <td>${s.course}</td>
+                    </tr>`;
+                });
+                unmatchedIntHtml += '</tbody></table>';
+                document.getElementById('aarambhUnmatchedInternalList').innerHTML = data.unmatchedInternal.length > 0 ? unmatchedIntHtml : '<p style="color:#666;">All Sahayak students matched.</p>';
+                
+                let unmatchedExtHtml = '<table class="data-table" style="font-size:12px; margin-top:10px;"><thead><tr><th>App No</th><th>Name</th><th>Cohort</th></tr></thead><tbody>';
+                data.unmatchedExternal.forEach(s => {
+                    unmatchedExtHtml += `<tr>
+                        <td>${s.applicationNo}</td>
+                        <td>${s.name}</td>
+                        <td>${s.cohort}</td>
+                    </tr>`;
+                });
+                unmatchedExtHtml += '</tbody></table>';
+                document.getElementById('aarambhUnmatchedExternalList').innerHTML = data.unmatchedExternal.length > 0 ? unmatchedExtHtml : '<p style="color:#666;">All external students matched.</p>';
+                
+                resultsDiv.style.display = 'block';
+                msg.innerText = 'Comparison complete. Review the results below.';
+            } else {
+                msg.className = 'error-msg';
+                msg.innerText = data.message || 'Error occurred';
+            }
+        } catch (e) {
+            msg.className = 'error-msg';
+            msg.innerText = 'Server Error.';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = '🔍 Find Connections';
+        }
+    }
+
+    async function syncAarambhCohorts() {
+        if (!aarambhMatchedData || aarambhMatchedData.length === 0) {
+            alert('No matched data to sync.');
+            return;
+        }
+        
+        if (!confirm(`Are you sure you want to sync ${aarambhMatchedData.length} students?`)) {
+            return;
+        }
+
+        const btn = document.getElementById('btnAarambhSync');
+        const originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = '⏳ Syncing...';
+
+        try {
+            const res = await fetch('/api/admin/sync-aarambh-cohorts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ matched: aarambhMatchedData })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                alert(data.message);
+                // Refresh data
+                aarambhMatchedData = null;
+                document.getElementById('aarambhPreviewResults').style.display = 'none';
+                renderStudents();
+                renderAssignmentsList();
+                fetchStats();
+            } else {
+                alert(data.message || 'Failed to sync');
+            }
+        } catch (e) {
+            alert('Server error during sync.');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
     }
 
 </script>
