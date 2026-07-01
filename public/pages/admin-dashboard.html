@@ -129,7 +129,13 @@
             <div id="section-students" style="display:none;">
                 <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
                     <div class="card" style="flex: 1 1 60% ; min-width: 300px; max-width: 100%; overflow-x: auto;">
-                        <h3>👨‍🎓 All Students</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <h3>👨‍🎓 All Students</h3>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <input type="text" id="mainStudentSearch" placeholder="Search by name, app no, or course..." oninput="filterMainStudents()" style="padding:6px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; width:250px;">
+                                <span id="mainStudentCount" style="font-size:12px; color:#888;"></span>
+                            </div>
+                        </div>
                         <div id="allStudentsList" style="overflow-x: auto; min-width: 100%;"><p style="color:#888;">Loading...</p></div>
                     </div>
                     
@@ -567,10 +573,25 @@ function renderGraphics() {
 }
 
 // ── STUDENTS ──────────────────────────────────────────
-function renderStudents() {
+function filterMainStudents() {
+    const q = document.getElementById('mainStudentSearch').value.toLowerCase();
+    const filtered = allStudents.filter(s =>
+        (s.name && s.name.toLowerCase().includes(q)) ||
+        (s.admission_number && s.admission_number.toLowerCase().includes(q)) ||
+        (s.course && s.course.toLowerCase().includes(q))
+    );
+    renderStudents(filtered);
+    const countEl = document.getElementById('mainStudentCount');
+    if (countEl) countEl.textContent = `${filtered.length} students found`;
+}
+
+function renderStudents(studentsList = allStudents) {
     const container = document.getElementById('allStudentsList');
-    if (!allStudents || allStudents.length === 0) {
-        container.innerHTML = '<p style="color:#888;">No students registered yet.</p>';
+    const countEl = document.getElementById('mainStudentCount');
+    if (countEl) countEl.textContent = `${studentsList ? studentsList.length : 0} students found`;
+    
+    if (!studentsList || studentsList.length === 0) {
+        container.innerHTML = '<p style="color:#888;">No students found.</p>';
         return;
     }
     let html = `
@@ -587,7 +608,7 @@ function renderStudents() {
                     <th style="padding:10px 8px; text-align:center;">Actions</th>
                 </tr>
             </thead><tbody>`;
-    allStudents.forEach((s, index) => {
+    studentsList.forEach((s, index) => {
         html += `<tr>
             <td style="padding:10px 8px; text-align:center; color:#888;">${index + 1}</td>
             <td style="padding:10px 8px;"><strong>${s.name}</strong></td>
@@ -598,7 +619,7 @@ function renderStudents() {
             <td style="padding:10px 8px;"><span class="badge ${s.printouts_taken === 1 ? 'badge-approved' : 'badge-pending'}">${s.printouts_taken === 1 ? 'Done' : 'Pending'}</span></td>
             <td style="padding:10px 8px;">
                 <div style="display:flex; gap:6px; justify-content:center;">
-                    <button onclick="editStudentPrompt('${s.id}', '${s.name.replace(/'/g, "\\'")}', '${s.admission_number}', '${s.course}')" style="padding:4px 8px; font-size:11px; background:#f39c12; color:white; border:none; border-radius:4px; cursor:pointer;">✏️ Edit</button>
+                    <button onclick="editStudentPrompt('${s.id}', '${(s.name || '').replace(/'/g, "\\'")}', '${s.admission_number}', '${s.course}')" style="padding:4px 8px; font-size:11px; background:#f39c12; color:white; border:none; border-radius:4px; cursor:pointer;">✏️ Edit</button>
                     <button onclick="deleteStudent('${s.id}')" style="padding:4px 8px; font-size:11px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;">🗑️ Del</button>
                 </div>
             </td>
